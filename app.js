@@ -38,11 +38,11 @@ const DEFAULT_PRICES = {
 };
 
 const LANGS = {
-  en: { name: '영어', native: 'English', en: 'English', flag: '🇺🇸', stt: 'en-US', tts: 'en-US', level: 'A2+',
+  en: { name: '영어', native: 'English', en: 'English', stt: 'en-US', tts: 'en-US', level: 'A2+',
     tones: { auto: '상황에 맞게', polite: '정중하게', casual: '친근하게' } },
-  ja: { name: '일본어', native: '日本語', en: 'Japanese', flag: '🇯🇵', stt: 'ja-JP', tts: 'ja-JP', level: 'B1',
+  ja: { name: '일본어', native: '日本語', en: 'Japanese', stt: 'ja-JP', tts: 'ja-JP', level: 'B1',
     tones: { auto: '상황에 맞게', polite: '존댓말 (です・ます)', casual: '반말 (タメ口)' } },
-  es: { name: '스페인어', native: 'Español', en: 'Spanish', flag: '🇪🇸', stt: 'es-ES', tts: 'es-ES', level: 'A1',
+  es: { name: '스페인어', native: 'Español', en: 'Spanish', stt: 'es-ES', tts: 'es-ES', level: 'A1',
     tones: { auto: '상황에 맞게', polite: '격식 (usted)', casual: '친근 (tú)' } },
 };
 const TONE_PROMPT = {
@@ -66,43 +66,43 @@ const LENGTHS = {
 const ERROR_TYPES = ['문법', '시제', '활용', '어순', '어휘 선택', '성·수 일치', '관사·한정사', '전치사', '조사', '높임말·말투', '철자·표기', '기타'];
 
 const SCENARIOS = [
-  { id: 'airport', cat: '여행', icon: '✈️', title: '공항 체크인', desc: '좌석·수하물·탑승구',
+  { id: 'airport', cat: '여행', icon: 'plane', aiKo: '항공사 직원', title: '공항 체크인', desc: '좌석·수하물·탑승구',
     en: 'checking in for a flight at an airline counter', ai: 'an airline check-in agent', user: 'a traveler',
     missions: ['창가 또는 통로 좌석을 요청하기', '수하물 개수와 무게 제한을 묻기', '탑승구와 탑승 시간을 확인하기'], travel: true },
-  { id: 'immigration', cat: '여행', icon: '🛂', title: '입국 심사', desc: '방문 목적·체류 기간',
+  { id: 'immigration', cat: '여행', icon: 'passport', aiKo: '입국 심사관', title: '입국 심사', desc: '방문 목적·체류 기간',
     en: 'passing through immigration control after landing', ai: 'an immigration officer', user: 'a tourist arriving in the country',
     missions: ['방문 목적을 말하기', '체류 기간을 말하기', '숙소 주소(호텔 이름)를 말하기'], travel: true },
-  { id: 'hotel', cat: '여행', icon: '🏨', title: '호텔 체크인·문제 해결', desc: '예약 확인·조식·고장 신고',
+  { id: 'hotel', cat: '여행', icon: 'bed', aiKo: '호텔 직원', title: '호텔 체크인·문제 해결', desc: '예약 확인·조식·고장 신고',
     en: 'checking in at a hotel front desk and later reporting a problem with the room', ai: 'a hotel front desk clerk', user: 'a hotel guest',
     missions: ['이름으로 예약을 확인하기', '조식 시간과 장소를 묻기', '방의 문제(예: 에어컨 고장)를 알리고 해결을 요청하기'], travel: true },
-  { id: 'restaurant', cat: '여행', icon: '🍽️', title: '식당 주문·계산', desc: '추천 메뉴·알레르기·계산',
+  { id: 'restaurant', cat: '여행', icon: 'dish', aiKo: '웨이터', title: '식당 주문·계산', desc: '추천 메뉴·알레르기·계산',
     en: 'ordering food at a local restaurant and paying the bill', ai: 'a friendly waiter', user: 'a customer',
     missions: ['추천 메뉴를 묻기', '음식 알레르기나 못 먹는 재료를 말하기', '음료를 포함해 주문하기', '계산서를 요청하고 카드로 결제하기'], travel: true },
-  { id: 'directions', cat: '여행', icon: '🚇', title: '길 묻기·대중교통', desc: '길 찾기·표 사기',
+  { id: 'directions', cat: '여행', icon: 'sign', aiKo: '현지인', title: '길 묻기·대중교통', desc: '길 찾기·표 사기',
     en: 'asking a local for directions and how to use public transport', ai: 'a helpful local passer-by', user: 'a lost tourist',
     missions: ['목적지까지 가는 길을 묻기', '어떤 교통수단을 타야 하는지 묻기', '걸리는 시간이나 요금을 묻기'], travel: true },
-  { id: 'shopping', cat: '여행', icon: '🛍️', title: '쇼핑·교환·환불', desc: '사이즈·가격·환불',
+  { id: 'shopping', cat: '여행', icon: 'bag', aiKo: '점원', title: '쇼핑·교환·환불', desc: '사이즈·가격·환불',
     en: 'shopping for clothes and then asking to exchange or refund an item', ai: 'a shop assistant', user: 'a customer',
     missions: ['다른 사이즈나 색상이 있는지 묻기', '가격이나 할인 여부를 묻기', '교환 또는 환불을 요청하기'], travel: true },
-  { id: 'pharmacy', cat: '여행', icon: '💊', title: '약국·병원', desc: '증상 설명·복용법',
+  { id: 'pharmacy', cat: '여행', icon: 'pill', aiKo: '약사', title: '약국·병원', desc: '증상 설명·복용법',
     en: 'explaining symptoms at a pharmacy while traveling', ai: 'a pharmacist', user: 'a traveler who feels sick',
     missions: ['증상과 시작된 시점을 설명하기', '약 복용법(횟수·시간)을 묻기', '부작용이나 주의사항을 확인하기'], travel: true },
-  { id: 'smalltalk', cat: '일상', icon: '👋', title: '자기소개·스몰토크', desc: '처음 만난 사람과 대화',
+  { id: 'smalltalk', cat: '일상', icon: 'hand', aiKo: '현지 친구', title: '자기소개·스몰토크', desc: '처음 만난 사람과 대화',
     en: 'meeting a friendly local at a cafe and making small talk', ai: 'a friendly local person of a similar age', user: 'a visitor from Korea',
     missions: ['자기소개하기(이름·사는 곳·직업)', '여행이나 방문 이유를 말하기', '상대에게 질문을 두 번 이상 하기'], travel: true },
-  { id: 'hobby', cat: '일상', icon: '📷', title: '취미 이야기', desc: '좋아하는 것·이유·추천',
+  { id: 'hobby', cat: '일상', icon: 'camera', aiKo: '새 친구', title: '취미 이야기', desc: '좋아하는 것·이유·추천',
     en: 'chatting about hobbies (for example photography, reading, travel, music)', ai: 'a new friend who is curious about the learner', user: 'themself',
     missions: ['내 취미를 소개하기', '그 취미를 좋아하는 이유를 설명하기', '상대에게 추천을 부탁하기'] },
-  { id: 'phone', cat: '일상', icon: '📞', title: '전화 예약', desc: '날짜·시간·인원',
+  { id: 'phone', cat: '일상', icon: 'phone', aiKo: '식당 직원', title: '전화 예약', desc: '날짜·시간·인원',
     en: 'calling a popular restaurant on the phone to make a reservation', ai: 'a restaurant staff member answering the phone', user: 'a customer calling',
     missions: ['날짜·시간·인원을 말하기', '이름과 연락처를 전달하기', '특별 요청(창가 자리 등)을 하고 예약 내용을 확인하기'], travel: true },
-  { id: 'free', cat: '학습', icon: '💬', title: '자유 대화', desc: '주제를 정해 대화',
+  { id: 'free', cat: '학습', icon: 'chat', aiKo: '대화 상대', title: '자유 대화', desc: '주제를 정해 대화',
     en: 'a relaxed free conversation about a chosen topic', ai: 'a friendly conversation partner', user: 'themself',
     missions: ['주제에 대한 내 경험을 말하기', '내 의견과 이유를 말하기', '상대에게 질문하기'], topic: true },
-  { id: 'debate', cat: '학습', icon: '⚖️', title: '찬반 토론', desc: '의견·근거·반론',
+  { id: 'debate', cat: '학습', icon: 'scale', aiKo: '토론 상대', title: '찬반 토론', desc: '의견·근거·반론',
     en: 'a friendly debate on a chosen topic; the AI takes the opposite side', ai: 'a debate partner who politely takes the opposite position', user: 'a debater',
     missions: ['내 입장을 분명히 말하기', '근거를 두 가지 이상 말하기', '상대의 반론에 대답하기'], topic: true },
-  { id: 'custom', cat: '학습', icon: '✏️', title: '직접 만들기', desc: '상황·역할·미션 직접 입력', custom: true },
+  { id: 'custom', cat: '학습', icon: 'pencil', aiKo: '상대', title: '직접 만들기', desc: '상황·역할·미션 직접 입력', custom: true },
 ];
 
 const DEFAULT_SETTINGS = {
@@ -186,6 +186,34 @@ function fmtDate(ts, withTime = true) {
   const s = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   return withTime ? `${s} ${pad(d.getHours())}:${pad(d.getMinutes())}` : s;
 }
+/* ───────────── 디자인 도우미 (DESIGN.md 6·8장) ───────────── */
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const ICON_NAMES = new Set(['logo', 'mic', 'stop', 'send', 'speaker', 'translate', 'bulb', 'gear', 'check', 'x', 'key', 'download', 'back', 'play', 'lock',
+  'plane', 'passport', 'bed', 'dish', 'sign', 'bag', 'pill', 'hand', 'camera', 'phone', 'chat', 'scale', 'pencil', 'chev']);
+/** 인라인 SVG 아이콘(<use>) */
+function icon(name, size) {
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('class', 'i' + (size ? ' ' + size : ''));
+  svg.setAttribute('aria-hidden', 'true');
+  const use = document.createElementNS(SVG_NS, 'use');
+  use.setAttribute('href', '#i-' + (ICON_NAMES.has(name) ? name : 'chat'));
+  svg.append(use);
+  return svg;
+}
+/** 언어 배지(EN/JA/ES). Windows Edge는 국기 이모지를 글자로 보여 주므로 배지를 씁니다. */
+function langBadge(id, small) {
+  return el('span', { class: `lang ${id}${small ? ' sm' : ''}`, 'aria-hidden': 'true' }, id.toUpperCase());
+}
+/** 세그먼트 컨트롤 */
+function segment(options, current, onPick, { ink = false, label = '' } = {}) {
+  const box = el('div', { class: 'seg' + (ink ? ' ink' : ''), role: 'group', 'aria-label': label });
+  for (const [value, text] of options) {
+    box.append(el('button', { type: 'button', 'aria-pressed': String(value === current), onclick: () => onPick(value) }, text));
+  }
+  return box;
+}
+function aiName(s = session) { return (s && s.scenario && s.scenario.aiKo) || '상대'; }
+
 function levelInfo(id) { return LEVELS.find((l) => l.id === id) || LEVELS[1]; }
 function levelLabel(lang, id) {
   const l = levelInfo(id);
@@ -328,7 +356,7 @@ function updateCostBadge() {
   const onChat = !$('#view-chat').classList.contains('hidden') || !$('#view-report').classList.contains('hidden');
   if (!session || !onChat) { b.classList.add('hidden'); return; }
   const t = totalCost();
-  b.textContent = `💰 ${fmtUSD(t)} · ${fmtKRW(t)}`;
+  b.textContent = `${fmtUSD(t)} · ${fmtKRW(t)}`;
   b.classList.remove('hidden');
 }
 
@@ -491,65 +519,199 @@ function speak(text, lang) {
   u.rate = Number(settings.rate) || 1;
   speechSynthesis.speak(u);
 }
-function listenBtn(text, lang, label = '🔊') {
-  return el('button', { class: 'listen', type: 'button', title: '듣기', 'aria-label': '듣기', onclick: () => speak(text, lang) }, label);
+function listenBtn(text, lang) {
+  return el('button', { class: 'tool icon-only', type: 'button', title: '듣기', 'aria-label': '듣기', onclick: () => speak(text, lang) }, icon('speaker', 'sm'));
 }
 
 /* ───────────── 음성 인식(STT) ───────────── */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let rec = null;
+// 안드로이드 크롬 계열은 continuous 모드에서 결과가 중복되는 문제가 있어 한 문장씩 듣고 필요하면 다시 시작합니다.
+const IS_ANDROID = /Android/i.test(navigator.userAgent);
+const MAX_LISTEN_MS = 60000;   // 한 번 누르면 최대 60초까지 듣기
+let rec = null;                // 현재 SpeechRecognition 객체
+let listening = false;         // 사용자가 마이크를 켜 둔 상태
 let recGotResult = false;
+let micDiag = null;            // 진단: 마이크 열림·소리 감지·말 감지 여부
+let autoStopTimer = null;
 function setMicStatus(t) { $('#micStatus').textContent = t; }
-function stopMic() { if (rec) { try { rec.stop(); } catch { /* 무시 */ } } }
+/** 마이크 버튼·입력창·파형을 듣기 상태에 맞춥니다(DESIGN.md 6.10). */
+function setMicUI(on) {
+  const b = $('#micBtn');
+  b.classList.toggle('live', on);
+  b.replaceChildren(icon(on ? 'stop' : 'mic', 'xl'));
+  b.setAttribute('aria-label', on ? '음성 입력 멈추기' : '음성 입력');
+  $('#input').classList.toggle('listening', on);
+  $('#micWave').classList.toggle('hidden', !on);
+  $('.mic-hint').classList.toggle('live', on);
+}
+function stopMic() {
+  if (listening && micDiag) micDiag.manual = true;
+  if (listening) setMicUI(false);
+  listening = false;
+  clearTimeout(autoStopTimer);
+  if (rec) { try { rec.stop(); } catch { /* 무시 */ } }
+}
+const SR_ERRORS = {
+  'not-allowed': '마이크 권한이 거부되었습니다. 주소창 왼쪽 자물쇠(사이트 정보) 아이콘에서 마이크를 "허용"으로 바꾼 뒤 새로고침해 주세요.',
+  'service-not-allowed': '브라우저가 음성 인식 서비스를 막았습니다. HTTPS 주소(GitHub Pages)에서 열었는지, 브라우저의 음성 인식 기능이 꺼져 있지 않은지 확인해 주세요.',
+  'audio-capture': '마이크를 찾을 수 없습니다. 마이크가 연결되어 있는지, 다른 앱(줌, 팀즈 등)이 마이크를 쓰고 있지 않은지 확인해 주세요.',
+  'network': '음성 인식 서버에 연결할 수 없습니다. 인터넷 연결이나 회사·학교 방화벽을 확인해 주세요.',
+  'language-not-supported': '이 브라우저에서 해당 언어의 음성 인식을 지원하지 않습니다.',
+  'bad-grammar': '음성 인식 설정 오류가 발생했습니다.',
+};
 function toggleMic() {
   if (!SR) { toast('이 브라우저는 음성 인식을 지원하지 않습니다. Edge·삼성 인터넷·크롬을 사용하거나 입력창에 타자로 입력해 주세요.', true); return; }
-  if (rec) { stopMic(); return; }
+  if (listening) { stopMic(); return; }
   if ('speechSynthesis' in window) speechSynthesis.cancel();
+  listening = true;
+  recGotResult = false;
+  micDiag = { audio: false, sound: false, speech: false, restarts: 0, startedAt: Date.now() };
+  setMicUI(true);
+  setMicStatus('마이크를 여는 중…');
+  startRecognition();
+}
+function startRecognition() {
   const input = $('#input');
   const sep = session.lang === 'ja' ? '' : ' ';
   const base = input.value.trim() ? input.value.trim() + sep : '';
-  recGotResult = false;
-  rec = new SR();
-  rec.lang = LANGS[session.lang].stt;
-  rec.interimResults = true;
-  rec.continuous = false;
-  rec.maxAlternatives = 1;
-  rec.onstart = () => { $('#micBtn').classList.add('on'); setMicStatus('듣고 있어요… 말을 마치면 잠시 기다리거나 다시 누르세요.'); };
-  rec.onresult = (e) => {
+  const r = new SR();
+  let roundResult = false;
+  rec = r;
+  r.lang = LANGS[session.lang].stt;
+  r.interimResults = true;
+  r.continuous = !IS_ANDROID;
+  r.maxAlternatives = 1;
+  r.onaudiostart = () => {
+    micDiag.audio = true;
+    setMicStatus('지금 말씀하세요 · 다 말하면 마이크를 다시 누르세요');
+  };
+  r.onsoundstart = () => { micDiag.sound = true; };
+  r.onspeechstart = () => { micDiag.speech = true; setMicStatus('듣고 있어요… 다 말하면 다시 누르세요'); };
+  r.onresult = (e) => {
     let finalText = '';
     let interim = '';
     for (let i = 0; i < e.results.length; i++) {
-      const r = e.results[i];
-      if (r.isFinal) finalText += r[0].transcript; else interim += r[0].transcript;
+      const res = e.results[i];
+      if (res.isFinal) finalText += res[0].transcript; else interim += res[0].transcript;
     }
     input.value = base + (finalText + interim).trim();
-    if (finalText.trim()) recGotResult = true;
+    if (finalText.trim()) { recGotResult = true; roundResult = true; }
     autoResize();
+    // 자동 전송을 켠 경우: 마지막 결과 뒤 2초 동안 말이 없으면 멈추고 보냅니다.
+    if (settings.autoSend && recGotResult) {
+      clearTimeout(autoStopTimer);
+      autoStopTimer = setTimeout(() => { if (listening) stopMic(); }, 2000);
+    }
   };
-  rec.onerror = (e) => {
-    const map = {
-      'not-allowed': '마이크 권한이 거부되었습니다. 주소창의 자물쇠 아이콘에서 마이크를 허용해 주세요.',
-      'service-not-allowed': '음성 인식 서비스를 사용할 수 없습니다. HTTPS 주소에서 열었는지 확인해 주세요.',
-      'no-speech': '음성이 감지되지 않았습니다. 다시 눌러 말해 보세요.',
-      'audio-capture': '마이크를 찾을 수 없습니다.',
-      'network': '음성 인식 서버에 연결할 수 없습니다. 인터넷 연결을 확인해 주세요.',
-      'language-not-supported': '이 브라우저에서 해당 언어의 음성 인식을 지원하지 않습니다.',
-    };
-    if (e.error !== 'aborted') toast(map[e.error] || `음성 인식 오류: ${e.error}`, e.error !== 'no-speech');
+  r.onerror = (e) => {
+    r.lastError = e.error;
+    if (e.error === 'no-speech' || e.error === 'aborted') return; // onend에서 처리
+    listening = false;
+    toast(SR_ERRORS[e.error] || `음성 인식 오류: ${e.error}`, true);
   };
-  rec.onend = () => {
+  r.onend = () => {
+    if (rec === r) rec = null;
+    const elapsed = Date.now() - micDiag.startedAt;
+    // 사용자가 아직 멈추지 않았으면 다시 듣습니다(무음으로 끊긴 경우, 또는 연속 듣기가 서버에서 끊긴 경우).
+    const silentEnd = r.lastError === 'no-speech' || (!r.lastError && !(IS_ANDROID && roundResult));
+    if (listening && elapsed < MAX_LISTEN_MS && silentEnd && micDiag.restarts < 12) {
+      micDiag.restarts++;
+      setTimeout(() => { if (listening) startRecognition(); }, 200);
+      return;
+    }
+    finishListening(r.lastError);
+  };
+  try { r.start(); } catch (e) {
     rec = null;
-    $('#micBtn').classList.remove('on');
-    setMicStatus(recGotResult ? (settings.autoSend ? '보내는 중…' : '인식된 문장을 확인한 뒤 보내기를 누르세요.') : '마이크를 눌러 말해 보세요.');
-    if (recGotResult && settings.autoSend && input.value.trim()) sendUser();
-    else input.focus();
-  };
-  try { rec.start(); } catch (e) { rec = null; toast('음성 인식을 시작하지 못했습니다: ' + e.message, true); }
+    listening = false;
+    toast('음성 인식을 시작하지 못했습니다: ' + e.message, true);
+    finishListening('start-failed');
+  }
+}
+function finishListening(err) {
+  listening = false;
+  clearTimeout(autoStopTimer);
+  setMicUI(false);
+  const input = $('#input');
+  if (recGotResult) {
+    setMicStatus(settings.autoSend ? '보내는 중…' : '인식된 문장을 확인한 뒤 보내기를 누르세요.');
+    if (settings.autoSend && input.value.trim()) sendUser(); else input.focus();
+    return;
+  }
+  setMicStatus('마이크를 눌러 말해 보세요.');
+  if (err && err !== 'no-speech' && err !== 'aborted') return; // 이미 안내함
+  // 직접 멈춘 경우에는 소리가 들어왔으면 조용히 끝내고, 소리가 전혀 없었을 때만 안내합니다.
+  if (micDiag.manual && (micDiag.sound || Date.now() - micDiag.startedAt < 3000)) return;
+  // 무엇이 안 됐는지 단계별로 알려 줍니다.
+  let msg;
+  if (!micDiag.audio) msg = '마이크가 열리지 않았습니다. 브라우저의 마이크 권한과 Windows(또는 휴대폰)의 마이크 접근 설정을 확인해 주세요.';
+  else if (!micDiag.sound) msg = '마이크에 소리가 들어오지 않습니다. 기본 마이크(입력 장치)가 맞는지, 음소거나 입력 볼륨 0이 아닌지 확인해 주세요. ⚙️ 설정 → 🎤 마이크 테스트로 확인할 수 있습니다.';
+  else if (!micDiag.speech) msg = '소리는 들어오지만 말소리로 인식되지 않았습니다. 마이크 입력 볼륨을 높이거나 조금 더 가까이에서 또렷하게 말해 보세요.';
+  else msg = '말소리는 들렸지만 글자로 바꾸지 못했습니다. 연습 언어와 같은 언어로, 조금 천천히 말해 보세요.';
+  toast(msg, true);
+}
+
+/** 설정의 마이크 테스트: 브라우저가 기본 마이크에서 소리를 받는지 5초 동안 확인합니다. */
+async function micTest() {
+  const out = $('#micTestResult');
+  const meter = $('#micMeter i');
+  const btn = $('#micTestBtn');
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    out.textContent = '이 브라우저에서는 마이크 테스트를 할 수 없습니다(HTTPS 주소에서 열어 주세요).';
+    return;
+  }
+  stopMic();
+  let stream;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch (e) {
+    out.textContent = e.name === 'NotAllowedError' ? '❌ 마이크 권한이 거부되었습니다. 주소창 왼쪽 자물쇠 아이콘에서 마이크를 허용해 주세요.'
+      : e.name === 'NotFoundError' ? '❌ 연결된 마이크를 찾을 수 없습니다.'
+      : e.name === 'NotReadableError' ? '❌ 마이크를 열 수 없습니다. 다른 앱이 마이크를 쓰고 있는지 확인해 주세요.'
+      : '❌ 마이크를 열지 못했습니다: ' + e.message;
+    return;
+  }
+  btn.disabled = true;
+  const track = stream.getAudioTracks()[0];
+  const label = (track && track.label) || '기본 마이크';
+  let devices = [];
+  try { devices = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === 'audioinput'); } catch { /* 무시 */ }
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  const ctx = new Ctx();
+  const analyser = ctx.createAnalyser();
+  analyser.fftSize = 1024;
+  ctx.createMediaStreamSource(stream).connect(analyser);
+  const buf = new Float32Array(analyser.fftSize);
+  let peak = 0;
+  const until = performance.now() + 5000;
+  out.textContent = `사용 중인 마이크: ${label} — 5초 동안 아무 말이나 해 보세요.`;
+  await new Promise((resolve) => {
+    (function tick() {
+      analyser.getFloatTimeDomainData(buf);
+      let sum = 0;
+      for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
+      const rms = Math.sqrt(sum / buf.length);
+      peak = Math.max(peak, rms);
+      meter.style.width = Math.min(100, rms * 500) + '%';
+      if (performance.now() < until) requestAnimationFrame(tick); else resolve();
+    })();
+  });
+  stream.getTracks().forEach((t) => t.stop());
+  ctx.close();
+  meter.style.width = '0%';
+  btn.disabled = false;
+  const list = devices.length > 1 ? ` (연결된 마이크 ${devices.length}개: ${devices.map((d) => d.label || '이름 없음').join(', ')})` : '';
+  if (peak < 0.01) {
+    out.textContent = `❌ "${label}"에서 소리가 거의 들어오지 않았습니다. 이 마이크가 꺼져 있거나 음소거 상태일 수 있습니다. Windows 설정 → 시스템 → 소리 → 입력에서 실제로 쓰는 마이크를 기본 장치로 고르고 입력 볼륨을 확인해 주세요.${list}`;
+  } else {
+    out.textContent = `✅ "${label}"에서 소리가 잘 들어옵니다. 그래도 음성 인식이 안 되면 브라우저의 음성 인식 서비스 문제일 수 있으니, README의 "음성 인식 문제 해결"을 참고해 주세요.${list}`;
+  }
 }
 
 /* ───────────── 0. 키 화면 ───────────── */
 async function testKey(key, out) {
   out.textContent = '확인 중…';
+  out.className = out.className.replace(/\s*(ok|bad)\b/g, '');
   try {
     const res = await fetch(OR_BASE + '/key', { headers: { Authorization: 'Bearer ' + key } });
     if (!res.ok) throw new ApiError(res.status, '');
@@ -560,9 +722,11 @@ async function testKey(key, out) {
     let modelNote = '';
     try { modelNote = await refreshCatalog(); } catch { modelNote = ' (모델 목록은 불러오지 못했습니다)'; }
     out.textContent = `✅ 연결되었습니다. ${usage}${limit}${modelNote}`;
+    out.className = out.className.replace(/\s*(ok|bad)\b/g, '') + ' ok';
     return true;
   } catch (e) {
     out.textContent = '❌ ' + (e instanceof ApiError && e.status === 401 ? 'API 키가 올바르지 않습니다.' : friendlyError(e));
+    out.className = out.className.replace(/\s*(ok|bad)\b/g, '') + ' bad';
     return false;
   }
 }
@@ -639,66 +803,72 @@ function renderSetup() {
   $('#resumeBanner').classList.toggle('hidden', !hasOpen);
   if (hasOpen) {
     $('#resumeBanner').firstElementChild.textContent = session.endedAt
-      ? `저장하지 않은 대화 리포트가 있습니다. (${LANGS[session.lang].name} · ${session.scenario.title})`
-      : `진행 중이던 대화가 있습니다. (${LANGS[session.lang].name} · ${session.scenario.title})`;
+      ? `저장하지 않은 리포트가 있어요 · ${LANGS[session.lang].name} · ${session.scenario.title}`
+      : `진행 중이던 대화가 있어요 · ${LANGS[session.lang].name} · ${session.scenario.title}`;
     $('#resumeBtn').textContent = session.endedAt ? '리포트 보기' : '이어서 하기';
   }
   $('#fileNotice').classList.toggle('hidden', location.protocol !== 'file:');
 
-  // 언어
+  // 언어 카드
   const lc = $('#langChoices');
   lc.textContent = '';
   for (const [id, L] of Object.entries(LANGS)) {
     lc.append(el('button', {
-      type: 'button', class: 'choice' + (settings.lang === id ? ' selected' : ''), 'aria-pressed': String(settings.lang === id),
+      type: 'button', class: 'pick', 'aria-pressed': String(settings.lang === id),
       onclick: () => { settings.lang = id; saveSettings(); renderSetup(); },
-    }, el('span', { class: 'ic' }, L.flag), el('span', { class: 't' }, `${L.name} · ${L.native}`),
+    }, langBadge(id), el('span', { class: 't' }, `${L.name} · ${L.native}`),
     el('span', { class: 'd' }, levelLabel(id, settings.levels[id]))));
   }
-  // 수준
-  const ls = $('#levelSel');
-  ls.textContent = '';
-  for (const l of LEVELS) ls.append(el('option', { value: l.id }, levelLabel(settings.lang, l.id)));
-  ls.value = settings.levels[settings.lang];
-  ls.onchange = () => { settings.levels[settings.lang] = ls.value; saveSettings(); renderSetup(); };
-  // 말투
-  const ts = $('#toneSel');
-  ts.textContent = '';
-  for (const [k, v] of Object.entries(LANGS[settings.lang].tones)) ts.append(el('option', { value: k }, v));
-  ts.value = settings.tones[settings.lang] || 'auto';
-  ts.onchange = () => { settings.tones[settings.lang] = ts.value; saveSettings(); };
-  // 길이
-  $('#lengthSel').value = settings.length;
-  $('#lengthSel').onchange = () => { settings.length = $('#lengthSel').value; saveSettings(); renderEstimate(); };
+  // 수준·말투·답변 길이
+  $('#levelSeg').replaceChildren(segment(LEVELS.map((l) => [l.id, l.id]), settings.levels[settings.lang],
+    (v) => { settings.levels[settings.lang] = v; saveSettings(); renderSetup(); }, { ink: true, label: '수준' }));
+  $('#levelHint').textContent = levelLabel(settings.lang, settings.levels[settings.lang]);
+  $('#toneSeg').replaceChildren(segment(Object.entries(LANGS[settings.lang].tones), settings.tones[settings.lang] || 'auto',
+    (v) => { settings.tones[settings.lang] = v; saveSettings(); renderSetup(); }, { label: '말투' }));
+  $('#lengthSeg').replaceChildren(segment([['short', '짧게'], ['normal', '보통'], ['long', '길게']], settings.length,
+    (v) => { settings.length = v; saveSettings(); renderSetup(); }, { label: 'AI 답변 길이' }));
 
-  // 상황
+  // 상황 카드
   const sc = $('#scenChoices');
   sc.textContent = '';
-  for (const cat of ['여행', '일상', '학습']) {
-    sc.append(el('div', { class: 'cat-label' }, cat));
-    const grid = el('div', { class: 'choices scen' });
+  for (const [cat, label] of [['여행', '여행'], ['일상', '일상'], ['학습', '학습']]) {
+    sc.append(el('div', { class: 'cat' }, label));
+    const grid = el('div', { class: 'grid-scen' });
     for (const s of SCENARIOS.filter((x) => x.cat === cat)) {
       grid.append(el('button', {
-        type: 'button', class: 'choice' + (settings.scenario === s.id ? ' selected' : ''), 'aria-pressed': String(settings.scenario === s.id),
+        type: 'button', class: 'pick', 'aria-pressed': String(settings.scenario === s.id),
         onclick: () => { settings.scenario = s.id; saveSettings(); renderSetup(); },
-      }, el('span', { class: 'ic' }, s.icon), el('span', { class: 't' }, s.title), el('span', { class: 'd' }, s.desc)));
+      }, el('span', { class: 'tile' }, icon(s.icon, 'lg')), el('span', { class: 't' }, s.title), el('span', { class: 'd' }, s.desc)));
     }
     sc.append(grid);
   }
   renderScenarioExtra();
-  renderMissionPreview();
-
-  // 모델 구성
-  const seg = $('#presetSeg');
-  seg.textContent = '';
-  for (const [k, p] of Object.entries(PRESETS)) {
-    seg.append(el('button', { type: 'button', class: settings.preset === k ? 'on' : '', onclick: () => applyPreset(k) }, p.label));
-  }
-  if (settings.preset === 'custom') seg.append(el('button', { type: 'button', class: 'on' }, '사용자 지정'));
+  renderTicket();
+}
+/** 오른쪽 '오늘의 주문서' (DESIGN.md 6.4) */
+function renderTicket() {
+  const sc = currentScenario();
+  const L = LANGS[settings.lang];
+  $('#ticketTitle').textContent = sc.custom ? (settings.custom.place.trim() || '직접 만드는 상황') : sc.title;
+  const rows = [['언어', `${L.name} · ${settings.levels[settings.lang]}`]];
+  if (sc.travel && settings.city.trim()) rows.push(['장소', settings.city.trim()]);
+  if (sc.topic && settings.topic.trim()) rows.push(['주제', settings.topic.trim()]);
+  rows.push(['상대', sc.custom ? (settings.custom.ai.trim() || '상황에 맞는 사람') : sc.aiKo]);
+  rows.push(['목표', `${settings.turns}턴`]);
+  $('#ticketDl').replaceChildren(...rows.flatMap(([k, v]) => [el('dt', null, k), el('dd', null, v)]));
+  const ms = setupMissions();
+  $('#missionCount').textContent = ms.length ? `미션 ${ms.length}` : '미션';
+  $('#missionPreview').replaceChildren(...(ms.length ? ms.map((m) => el('li', null, m))
+    : [el('li', { class: 'muted' }, '시작하면 AI가 미션을 만들어 드려요.')]));
+  const presetOpts = Object.entries(PRESETS).map(([k, p]) => [k, p.label]);
+  if (settings.preset === 'custom') presetOpts.push(['custom', '사용자 지정']);
+  $('#presetSeg').replaceChildren(segment(presetOpts, settings.preset, (k) => { if (k !== 'custom') applyPreset(k); }, { label: 'AI 모델 구성' }));
   $('#presetDesc').textContent = settings.preset === 'custom'
-    ? `대화 ${settings.models.partner} · 교정 ${settings.models.coach} · 리포트 ${settings.models.report}`
+    ? `대화 ${shortModel(settings.models.partner)} · 교정 ${shortModel(settings.models.coach)} · 리포트 ${shortModel(settings.models.report)}`
     : PRESETS[settings.preset].desc;
-  renderEstimate();
+  const v = estimateCost();
+  $('#estimate').replaceChildren(el('span', { class: 'muted small' }, '예상 비용'),
+    el('span', null, el('b', null, fmtUSD(v)), ' ', el('span', { class: 'mono muted small' }, '≈ ' + fmtKRW(v))));
 }
 function applyPreset(k) {
   settings.preset = k;
@@ -716,13 +886,14 @@ function renderScenarioExtra() {
       const [a, b] = path;
       if (b) settings[a][b] = input.value; else settings[a] = input.value;
       saveSettings();
-      if (a === 'custom') renderMissionPreview();
+      renderTicket();
     });
     return input;
   };
   if (sc.travel) {
-    box.append(el('label', { class: 'field' }, el('span', null, '여행지 (선택) — 예: 마드리드, 오사카, 뉴욕'),
-      bind(el('input', { type: 'text', value: settings.city, placeholder: '입력하면 현지 상황에 맞춰 대화합니다' }), ['city'])));
+    box.append(el('label', { class: 'field', style: 'margin-top:20px' }, el('span', null, '여행지 (선택)'),
+      bind(el('input', { type: 'text', value: settings.city, placeholder: '예: 마드리드, 오사카, 뉴욕' }), ['city']),
+      el('div', { class: 'help' }, '입력하면 현지 식당 이름, 화폐, 관습에 맞춰 대화합니다.')));
   }
   if (sc.topic) {
     box.append(el('label', { class: 'field' }, el('span', null, '주제'),
@@ -740,13 +911,6 @@ function renderScenarioExtra() {
     );
   }
 }
-function renderMissionPreview() {
-  const ol = $('#missionPreview');
-  ol.textContent = '';
-  const ms = setupMissions();
-  if (!ms.length) ol.append(el('li', { class: 'muted' }, '대화를 시작하면 AI가 미션을 만들어 드립니다.'));
-  for (const m of ms) ol.append(el('li', null, m));
-}
 /** 목표 턴 수 기준의 대략적인 예상 비용 */
 function estimateCost(turns = settings.turns) {
   const P = (id) => priceOf(id) || { in: 1, out: 5 };
@@ -762,12 +926,7 @@ function estimateCost(turns = settings.turns) {
   const c = (id, i, o) => (i * P(id).in + o * P(id).out) / 1e6;
   return c(m.partner, partnerIn, partnerOut) + c(m.coach, coachIn, coachOut) + c(m.report, repIn, repOut);
 }
-function renderEstimate() {
-  const v = estimateCost();
-  $('#estimate').textContent = '';
-  $('#estimate').append('예상 비용 (', String(settings.turns), '턴 기준): ', el('b', null, `약 ${fmtUSD(v)} (${fmtKRW(v)})`),
-    el('br'), el('span', { class: 'small' }, '힌트·번역을 쓰면 조금 늘어납니다.'));
-}
+function renderEstimate() { renderTicket(); }
 
 /* ───────────── 2. 회화 ───────────── */
 async function startSession() {
@@ -777,10 +936,10 @@ async function startSession() {
   if (sc.custom) {
     const c = settings.custom;
     if (!c.place.trim()) { toast('상황을 입력해 주세요.', true); return; }
-    scenario = { id: 'custom', custom: true, icon: sc.icon, title: c.place.trim().slice(0, 30), en: c.place.trim(),
+    scenario = { id: 'custom', custom: true, icon: sc.icon, aiKo: c.ai.trim() || '상대', title: c.place.trim().slice(0, 30), en: c.place.trim(),
       ai: c.ai.trim() || 'a person who naturally fits the situation', user: c.user.trim() || 'the learner' };
   } else {
-    scenario = { id: sc.id, icon: sc.icon, title: sc.title, en: sc.en, ai: sc.ai, user: sc.user };
+    scenario = { id: sc.id, icon: sc.icon, aiKo: sc.aiKo, title: sc.title, en: sc.en, ai: sc.ai, user: sc.user };
   }
   if (sc.topic && !settings.topic.trim()) { toast('주제를 입력해 주세요.', true); return; }
   if (session && session.messages.length && !session.saved) {
@@ -796,12 +955,12 @@ async function startSession() {
   $('#startBtn').disabled = true;
   try {
     if (!session.missions.length) {
-      $('#startBtn').textContent = '미션 만드는 중…';
+      $('#startBtn').lastElementChild.textContent = '미션 만드는 중…';
       await generateMissions();
     }
   } finally {
     $('#startBtn').disabled = false;
-    $('#startBtn').textContent = '대화 시작하기 ▶';
+    $('#startBtn').lastElementChild.textContent = '대화 시작하기';
   }
   openChat();
   partnerTurn();
@@ -823,12 +982,13 @@ async function generateMissions() {
 }
 function openChat() {
   const L = LANGS[session.lang];
-  $('#chatTitle').textContent = `${session.scenario.icon || ''} ${session.scenario.title}${session.city ? ' · ' + session.city : ''}`;
-  renderChatSub();
+  $('#chatIcon').replaceChildren(icon(session.scenario.icon, 'lg'));
+  $('#chatTitle').textContent = `${session.scenario.title}${session.city ? ' · ' + session.city : ''}`;
   $('#hints').classList.add('hidden');
   $('#turnNotice').classList.add('hidden');
-  $('#input').placeholder = `${L.name}로 말하거나 입력하세요 (Enter: 보내기, Shift+Enter: 줄바꿈)`;
+  $('#input').placeholder = `${L.name}로 말하거나 입력하세요 · Enter 보내기`;
   $('#micBtn').disabled = !SR;
+  setMicUI(false);
   setMicStatus(SR ? '마이크를 눌러 말해 보세요.' : '이 브라우저는 음성 인식을 지원하지 않아 타자로 입력합니다.');
   renderMessages();
   renderMissions();
@@ -839,19 +999,31 @@ function openChat() {
 function userTurns() { return session.messages.filter((m) => m.role === 'user').length; }
 function renderChatSub() {
   const L = LANGS[session.lang];
+  const turns = userTurns();
+  $('#chatSub').replaceChildren(langBadge(session.lang, true), `${L.name} · ${levelLabel(session.lang, session.level)} · 턴 ${turns}/${settings.turns}`);
+  $('#turnProgress').style.width = Math.min(100, (turns / settings.turns) * 100) + '%';
+  renderMissionStrip();
+}
+/** 모바일 미션 띠: 작은 스탬프 + 미션 수 + 비용 (DESIGN.md 5.3) */
+function renderMissionStrip() {
+  if (!session) return;
   const done = session.missions.filter((m) => m.done).length;
-  $('#chatSub').textContent = `${L.flag} ${L.name} · ${levelLabel(session.lang, session.level)} · 턴 ${userTurns()}/${settings.turns} · 미션 ${done}/${session.missions.length}`;
+  const open = $('#chatSide').classList.contains('open');
+  $('#missionStrip').replaceChildren(...session.missions.map((m) => el('span', { class: 'mini' + (m.done ? ' done' : ''), 'aria-hidden': 'true' })),
+    el('span', null, `미션 ${done}/${session.missions.length} · ${open ? '접기' : '자세히'}`),
+    el('span', { class: 'cost' }, fmtKRW(totalCost())));
+  $('#missionStrip').setAttribute('aria-expanded', String(open));
 }
 
 function renderMessages() {
   const box = $('#messages');
   box.textContent = '';
-  for (const m of session.messages) box.append(messageNode(m));
+  for (const m of session.messages) box.append(messageNode(m, true));
   scrollChat();
 }
 function updateMessage(m) {
   const old = document.querySelector(`[data-mid="${m.id}"]`);
-  const node = messageNode(m);
+  const node = messageNode(m, !!old);
   if (old) old.replaceWith(node); else $('#messages').append(node);
 }
 function scrollChat() {
@@ -860,29 +1032,37 @@ function scrollChat() {
   const last = box.lastElementChild;
   if (last && window.innerWidth <= 860) last.scrollIntoView({ block: 'end', behavior: 'smooth' });
 }
-function messageNode(m) {
+/** 말풍선 (DESIGN.md 6.5). quiet=true면 등장 애니메이션 없이 그립니다. */
+function messageNode(m, quiet) {
   const lang = session.lang;
-  const wrap = el('div', { class: 'msg ' + m.role, 'data-mid': m.id });
+  const tts = LANGS[lang].tts;
+  const wrap = el('div', { class: 'msg ' + (m.role === 'ai' ? 'ai' : 'me') + (quiet ? '' : ' msg-in'), 'data-mid': m.id });
   if (m.role === 'ai') {
-    const bubble = el('div', { class: 'bubble' + (m.pending ? ' typing' : ''), lang: LANGS[lang].tts }, m.text || '');
+    const name = aiName();
+    wrap.append(el('div', { class: 'who' }, el('span', { class: 'avatar', 'aria-hidden': 'true' }, name.charAt(0)), name));
+    const bubble = el('div', { class: 'bubble', lang: tts });
+    if (m.text) bubble.textContent = m.text;
+    else if (m.pending) bubble.append(el('span', { class: 'typing', 'aria-label': '답하는 중' }, el('i'), el('i'), el('i')));
     wrap.append(bubble);
     if (m.error) {
-      wrap.append(el('div', { class: 'corr fix' }, `⚠️ ${m.error} `, el('button', { class: 'btn sm', type: 'button', onclick: () => retryPartner(m) }, '다시 시도')));
+      wrap.append(el('div', { class: 'fail' }, icon('x', 'sm'), el('span', null, m.error),
+        el('button', { class: 'btn sm', type: 'button', onclick: () => retryPartner(m) }, '다시 시도')));
     } else if (!m.pending) {
-      const tools = el('div', { class: 'tools' },
-        el('button', { class: 'link-btn', type: 'button', onclick: () => speak(m.text, lang) }, '🔊 듣기'),
-        el('button', { class: 'link-btn', type: 'button', onclick: () => toggleTranslation(m) }, m.showTr ? '번역 숨기기' : '🇰🇷 번역'));
-      wrap.append(tools);
-      if (m.showTr) wrap.append(el('div', { class: 'translation' }, m.translation || '번역 중…'));
+      wrap.append(el('div', { class: 'tools' },
+        el('button', { class: 'tool', type: 'button', onclick: () => speak(m.text, lang) }, icon('speaker', 'sm'), '듣기'),
+        el('button', { class: 'tool' + (m.showTr ? ' on' : ''), type: 'button', 'aria-pressed': String(!!m.showTr), onclick: () => toggleTranslation(m) },
+          icon('translate', 'sm'), m.showTr ? '번역 숨기기' : '번역')));
+      if (m.showTr) wrap.append(el('div', { class: 'tr' }, m.translation || '번역하는 중…'));
     }
   } else {
-    wrap.append(el('div', { class: 'bubble', lang: LANGS[lang].tts }, m.text));
+    wrap.append(el('div', { class: 'bubble', lang: tts }, m.text));
     const c = correctionNode(m);
     if (c) wrap.append(c);
   }
   return wrap;
 }
-function highlightOriginal(text, errors) {
+/** 원문에서 틀린 부분을 빨간 펜 표시(취소선 + 위에 고친 단어)로 바꿉니다. */
+function markedOriginal(text, errors, lang) {
   const ranges = [];
   let cursor = 0;
   for (const er of errors || []) {
@@ -890,52 +1070,61 @@ function highlightOriginal(text, errors) {
     let i = text.indexOf(er.wrong, cursor);
     if (i < 0) i = text.indexOf(er.wrong);
     if (i < 0) continue;
-    ranges.push([i, i + er.wrong.length]);
+    ranges.push([i, i + er.wrong.length, er.fix || '']);
     cursor = i + er.wrong.length;
   }
   ranges.sort((a, b) => a[0] - b[0]);
   const out = [];
   let pos = 0;
-  for (const [s, e] of ranges) {
+  for (const [s, e, fix] of ranges) {
     if (s < pos) continue;
-    out.push(text.slice(pos, s), el('mark', { class: 'wrong' }, text.slice(s, e)));
+    // 나눔펜 글꼴에는 일본어 글자가 없으므로 일본어는 본문 글꼴로 씁니다(DESIGN.md 4장).
+    out.push(text.slice(pos, s), el('span', { class: 'mark' }, el('s', null, text.slice(s, e)),
+      el('span', { class: 'pen' + (lang === 'ja' ? ' plain' : ''), 'aria-label': '고침: ' + (fix || '삭제') }, fix || '✕')));
     pos = e;
   }
   out.push(text.slice(pos));
   return out;
 }
-function correctionNode(m) {
+/** 첨삭 노트 (DESIGN.md 6.6) */
+function correctionNode(m, full) {
   const lang = session.lang;
-  if (m.correcting) return el('div', { class: 'corr loading' }, el('span', { class: 'spinner' }), ' 교정 중…');
+  const tts = LANGS[lang].tts;
+  if (m.correcting) {
+    return el('div', { class: 'note loading', 'aria-label': '교정하는 중' },
+      el('span', { class: 'skel', style: 'width:55%' }), el('br'), el('span', { class: 'skel', style: 'width:80%' }));
+  }
   if (m.correctionError) {
-    return el('div', { class: 'corr' }, '교정을 불러오지 못했습니다. ', el('button', { class: 'btn sm', type: 'button', onclick: () => correct(m) }, '다시 시도'));
+    return el('div', { class: 'note fix' }, el('div', { class: 'head' }, icon('pencil', 'sm'), '교정을 불러오지 못했어요'),
+      el('button', { class: 'btn sm', type: 'button', onclick: () => correct(m) }, '다시 시도'));
   }
   const c = m.correction;
   if (!c) return null;
   const errs = Array.isArray(c.errors) ? c.errors : [];
-  const card = el('div', { class: 'corr ' + (errs.length ? 'fix' : 'ok') });
+  const card = el('div', { class: 'note ' + (errs.length ? 'fix' : 'ok') });
+  const comments = [];
   if (!errs.length) {
-    card.append(el('div', { class: 'head' }, '✅ 좋아요! 틀린 곳이 없습니다.'));
-    if (c.praise_ko) card.append(el('div', null, c.praise_ko));
+    card.append(el('div', { class: 'head' }, icon('check', 'sm'), '완벽해요', el('span', { class: 'badge' }, '정확')));
+    comments.push(c.praise_ko || '아주 자연스러워요 ✓');
   } else {
-    card.append(el('div', { class: 'head' }, `✏️ 고칠 부분 ${errs.length}개`));
-    card.append(el('div', { class: 'orig', lang: LANGS[lang].tts }, ...highlightOriginal(m.text, errs)));
-    card.append(el('div', { class: 'say' }, '→ ', el('span', { class: 'fixed', lang: LANGS[lang].tts }, c.corrected || ''), listenBtn(c.corrected, lang)));
-    const ul = el('ul');
+    const types = [...new Set(errs.map((er) => er.type || '기타'))];
+    card.append(el('div', { class: 'head' }, icon('pencil', 'sm'), `고칠 곳 ${errs.length}`, ...types.slice(0, 2).map((t) => el('span', { class: 'badge' }, t))));
+    card.append(el('div', { class: 'orig', lang: tts }, ...markedOriginal(m.text, errs, lang)));
+    if (c.corrected) card.append(el('div', { class: 'fixed' }, el('span', { lang: tts }, '→ ' + c.corrected), listenBtn(c.corrected, lang)));
     for (const er of errs) {
-      ul.append(el('li', null, el('span', { class: 'chip' }, er.type || '기타'),
-        el('b', null, er.wrong || ''), ' → ', el('b', null, er.fix || ''), er.explain_ko ? ` : ${er.explain_ko}` : ''));
+      card.append(el('div', { class: 'why' }, el('span', { class: 'chip pen' }, er.type || '기타'),
+        el('span', null, er.explain_ko || `${er.wrong || ''} → ${er.fix || ''}`)));
     }
-    card.append(ul);
+    if (c.praise_ko && full) comments.push(c.praise_ko);
   }
   const nat = (Array.isArray(c.natural) ? c.natural : []).filter(Boolean);
-  if (nat.length) {
-    card.append(el('div', { class: 'sec' }, '💬 더 자연스러운 표현'));
-    const ul = el('ul');
-    for (const n of nat) ul.append(el('li', { class: 'say' }, el('span', { lang: LANGS[lang].tts }, n), listenBtn(n, lang)));
-    card.append(ul);
+  if (nat.length && !full) {
+    card.append(el('div', { class: 'natural' }, el('span', { class: 'label' }, '더 자연스럽게'),
+      ...nat.map((n) => el('span', null, el('span', { class: 'hl', lang: tts }, n), listenBtn(n, lang)))));
   }
-  if (c.note_ko) card.append(el('div', { class: 'small', style: 'margin-top:6px' }, '💡 ' + c.note_ko));
+  if (c.note_ko) comments.unshift(c.note_ko);
+  for (const t of m.missionsNew || []) comments.push(`미션 달성! ${t} ✓`);
+  if (!full) for (const t of comments) card.append(el('div', { class: 'pen-comment' + (errs.length ? '' : ' ok') }, t));
   return card;
 }
 
@@ -1023,10 +1212,11 @@ async function correct(m) {
     if (!Array.isArray(j.errors)) j.errors = [];
     j.errors = j.errors.filter((er) => er && (er.wrong || er.fix)).map((er) => ({ ...er, type: ERROR_TYPES.includes(er.type) ? er.type : '기타' }));
     m.correction = j;
+    m.missionsNew = [];
     if (Array.isArray(j.missions_done)) {
       for (const i of j.missions_done) {
-        const idx = Number(i);
-        if (session.missions[idx]) session.missions[idx].done = true;
+        const ms = session.missions[Number(i)];
+        if (ms && !ms.done) { ms.done = true; m.missionsNew.push(ms.text); }
       }
       renderMissions();
     }
@@ -1058,11 +1248,12 @@ async function toggleTranslation(m) {
 }
 async function showHints() {
   const box = $('#hints');
+  const close = () => box.classList.add('hidden');
   box.classList.remove('hidden');
-  box.textContent = '';
-  box.append(el('div', { class: 'h-head' }, el('span', null, '💡 이렇게 말해 보세요'),
-    el('button', { class: 'link-btn', type: 'button', onclick: () => box.classList.add('hidden') }, '닫기')),
-  el('div', { class: 'muted small' }, el('span', { class: 'spinner' }), ' 힌트를 만드는 중…'));
+  box.replaceChildren(
+    el('div', { class: 'h-head' }, el('b', null, icon('bulb'), '이렇게 말해 보세요'),
+      el('button', { class: 'tool icon-only', type: 'button', 'aria-label': '닫기', onclick: close }, icon('x'))),
+    el('div', { class: 'hint' }, el('span', { class: 'skel', style: 'width:60%' }), el('br'), el('span', { class: 'skel', style: 'width:40%' })));
   try {
     const text = await chat({
       model: session.models.coach, role: '힌트', maxTokens: 800, temperature: 0.7,
@@ -1073,28 +1264,41 @@ async function showHints() {
     if (!hints.length) throw new Error('힌트를 만들지 못했습니다.');
     box.lastElementChild.remove();
     for (const h of hints.slice(0, 3)) {
-      box.append(el('div', { class: 'hint-item' },
-        el('div', { class: 'ht say', lang: LANGS[session.lang].tts }, h.text, listenBtn(h.text, session.lang)),
-        h.reading ? el('div', { class: 'hr' }, h.reading) : null,
-        el('div', { class: 'hr' }, h.ko || ''),
-        el('button', { class: 'link-btn', type: 'button', onclick: () => { $('#input').value = h.text; autoResize(); $('#input').focus(); } }, '입력창에 넣기')));
+      box.append(el('div', { class: 'hint' },
+        el('div', { class: 'ph', lang: LANGS[session.lang].tts }, h.text, listenBtn(h.text, session.lang)),
+        h.reading ? el('div', { class: 'rd', lang: 'ja' }, h.reading) : null,
+        el('div', { class: 'ko' }, h.ko || ''),
+        el('button', { class: 'tool ink', type: 'button', onclick: () => { $('#input').value = h.text; autoResize(); close(); $('#input').focus(); } }, '입력창에 넣기')));
     }
   } catch (e) {
     box.lastElementChild.textContent = '힌트를 불러오지 못했습니다: ' + friendlyError(e);
   }
 }
 
-function renderMissions() {
-  const ul = $('#missionList');
-  ul.textContent = '';
-  session.missions.forEach((ms, i) => {
-    const cb = el('input', { type: 'checkbox', id: 'ms' + i });
-    cb.checked = ms.done;
-    cb.onchange = () => { ms.done = cb.checked; saveSession(); renderMissions(); };
-    ul.append(el('li', { class: ms.done ? 'done' : '' }, cb, el('label', { for: 'ms' + i }, el('span', null, ms.text))));
+/** 미션 스탬프 카드 (DESIGN.md 6.7) */
+function stampsNode(missions, comments, editable) {
+  const ul = el('ul', { class: 'stamps' });
+  missions.forEach((ms, i) => {
+    const id = (editable ? 'ms' : 'rms') + i;
+    const stampEl = el('span', { class: 'stamp' + (ms.done ? ' done' : ''), 'aria-hidden': 'true' }, ms.done ? icon('check') : String(i + 1));
+    const text = el('span', null, ms.text, comments && comments[i] ? el('span', { class: 'comment' }, comments[i]) : null);
+    if (editable) {
+      const cb = el('input', { type: 'checkbox', id, class: 'vh' });
+      cb.checked = ms.done;
+      cb.onchange = () => { ms.done = cb.checked; saveSession(); renderMissions(); };
+      ul.append(el('li', { class: ms.done ? 'done' : '' }, cb, el('label', { for: id }, stampEl, text)));
+    } else {
+      ul.append(el('li', { class: ms.done ? 'done' : '' }, el('label', null, stampEl, text)));
+    }
   });
+  return ul;
+}
+function renderMissions() {
+  const ul = stampsNode(session.missions, null, true);
+  ul.id = 'missionList';
+  $('#missionList').replaceWith(ul);
   const done = session.missions.filter((m) => m.done).length;
-  $('#missionCard h2').textContent = `🎯 미션 ${done}/${session.missions.length}`;
+  $('#missionTally').textContent = `${done} / ${session.missions.length}`;
   renderChatSub();
 }
 function errorStats(s = session) {
@@ -1105,30 +1309,41 @@ function errorStats(s = session) {
   }
   return Object.entries(counts).sort((a, b) => b[1] - a[1]);
 }
+/** 빨간 펜 집계 (DESIGN.md 6.8) */
 function barsNode(stats) {
   const box = el('div', { class: 'bars' });
-  if (!stats.length) { box.append(el('div', { class: 'small muted' }, '아직 기록된 오류가 없습니다.')); return box; }
+  if (!stats.length) { box.append(el('div', { class: 'empty' }, '아직 빨간 펜이 없어요 ✓')); return box; }
   const max = Math.max(...stats.map((x) => x[1]));
   for (const [type, n] of stats) {
-    box.append(el('div', { class: 'bar-row' }, el('span', null, type),
-      el('div', { class: 'bar-track' }, el('div', { class: 'bar-fill', style: `width:${Math.round((n / max) * 100)}%` })),
-      el('span', { class: 'n' }, n)));
+    box.append(el('div', { class: 'bar' }, el('span', null, type),
+      el('span', { class: 'track' }, el('i', { style: `width:${Math.round((n / max) * 100)}%` })),
+      el('b', null, String(n))));
   }
   return box;
 }
 function renderLiveStats() {
-  const box = $('#liveStats');
-  box.replaceWith(Object.assign(barsNode(errorStats()), { id: 'liveStats' }));
+  const node = barsNode(errorStats());
+  node.id = 'liveStats';
+  $('#liveStats').replaceWith(node);
+}
+/** 비용 영수증 (DESIGN.md 6.9) */
+function receiptNode(s = session) {
+  const box = el('div', { class: 'receipt', 'aria-label': 'AI 사용 비용' }, el('div', { class: 'ttl' }, '— RECEIPT —'));
+  const rows = costRows(s);
+  if (!rows.length) box.append(el('div', { class: 'row' }, el('span', null, '아직 호출 없음'), el('span', null, '$0')));
+  for (const c of rows) {
+    box.append(el('div', { class: 'row' }, el('span', null, `${c.role} · ${shortModel(c.model)} ×${c.calls}`), el('span', null, fmtUSD(c.cost))));
+  }
+  const t = s.costs.reduce((a, c) => a + (c.cost || 0), 0);
+  box.append(el('div', { class: 'row sum' }, el('span', null, '합계'), el('span', null, `${fmtUSD(t)} · ${fmtKRW(t)}`)));
+  return box;
 }
 function renderLiveCost() {
-  const box = $('#liveCost');
-  if (!box || !session) return;
-  box.textContent = '';
-  const t = totalCost();
-  box.append(el('div', null, '누적: ', el('b', null, `${fmtUSD(t)} (${fmtKRW(t)})`)),
-    el('div', { class: 'muted' }, `AI 호출 ${session.costs.length}회`),
-    el('div', { class: 'muted' }, `대화: ${shortModel(session.models.partner)} · 교정: ${shortModel(session.models.coach)}`));
+  if (!session || !$('#liveCost')) return;
+  $('#liveCost').replaceChildren(receiptNode(session));
+  renderMissionStrip();
 }
+/** 모델 ID에서 회사 이름을 뺀 짧은 이름 (예: gemini-3.8-flash) */
 function shortModel(id) { return (id || '').split('/').pop(); }
 
 /* ───────────── 3. 리포트 ───────────── */
@@ -1184,68 +1399,74 @@ function renderReport() {
   const L = LANGS[s.lang];
   const r = s.report || {};
   const st = sessionStats(s);
+  const tts = L.tts;
   const box = $('#reportBody');
   box.textContent = '';
+  const card = (title, ...children) => el('div', { class: 'card' }, title ? el('h2', { class: 'h-sec' }, ...[].concat(title)) : null, ...children);
+
   box.append(
-    el('h1', null, '토크메이트 회화 리포트'),
-    el('div', { class: 'meta' }, `${fmtDate(s.startedAt)} · ${L.name} · ${levelLabel(s.lang, s.level)} · ${s.scenario.title}${s.city ? ' (' + s.city + ')' : ''}${s.topic ? ' · 주제: ' + s.topic : ''}`),
+    el('div', { class: 'eyebrow' }, `Report · ${fmtDate(s.startedAt)}`),
+    el('h1', { class: 'h-page' }, `${s.scenario.title}${s.city ? ' · ' + s.city : ''}`),
+    el('div', { class: 'meta-row' }, langBadge(s.lang, true),
+      `${L.name} · ${levelLabel(s.lang, s.level)} · ${aiName(s)}와의 대화${s.topic ? ' · 주제: ' + s.topic : ''}`,
+      s.saved ? null : el('span', { class: 'unsaved no-print' }, '아직 파일로 저장하지 않았어요')),
     el('div', { class: 'stats' },
       stat(st.turns, '내가 말한 횟수'), stat(st.units, st.unitLabel),
       stat(`${st.perfect}/${st.corrected}`, '틀린 곳 없는 문장'), stat(`${st.mins}분`, '연습 시간')),
   );
-  if (s.reportLoading) box.append(el('p', null, el('span', { class: 'spinner' }), ' AI가 리포트를 작성하고 있습니다… (', shortModel(s.models.report), ')'));
-  if (s.reportError) {
-    box.append(el('div', { class: 'banner no-print' }, el('span', null, `리포트 생성 실패: ${s.reportError}`),
+  // 총평
+  if (s.reportLoading) {
+    box.append(card('총평', el('p', { class: 'muted' }, `${shortModel(s.models.report)}가 노트를 정리하고 있어요…`),
+      el('span', { class: 'skel', style: 'width:90%' }), el('br'), el('span', { class: 'skel', style: 'width:70%' })));
+  } else if (s.reportError) {
+    box.append(el('div', { class: 'banner error no-print', style: 'margin-top:16px' }, el('span', null, `리포트를 만들지 못했어요: ${s.reportError}`),
       el('button', { class: 'btn sm', type: 'button', onclick: generateReport }, '다시 시도')));
+  } else if (r.summary_ko) {
+    box.append(card('총평', el('p', { class: 'verdict' }, r.summary_ko),
+      r.level_comment_ko ? el('p', { class: 'verdict-pen' }, r.level_comment_ko) : null));
   }
-  if (r.summary_ko) {
-    box.append(el('section', null, el('h2', null, '총평'), el('p', null, r.summary_ko), r.level_comment_ko ? el('p', { class: 'muted' }, r.level_comment_ko) : null));
-  }
-  // 미션
-  const mRows = s.missions.map((m, i) => {
-    const rm = Array.isArray(r.missions) ? r.missions[i] : null;
-    return [m.done ? '✅' : '⬜', m.text, (rm && rm.comment_ko) || ''];
-  });
-  box.append(el('section', null, el('h2', null, '미션'), table(['달성', '미션', '코멘트'], mRows)));
   // 잘한 점 / 연습할 점
   if ((r.strengths_ko || []).length || (r.improve_ko || []).length) {
-    box.append(el('section', null, el('div', { class: 'two-col' },
-      el('div', null, el('h2', null, '👍 잘한 점'), el('ul', null, ...(r.strengths_ko || []).map((t) => el('li', null, t)))),
-      el('div', null, el('h2', null, '🎯 다음에 연습할 점'), el('ul', null, ...(r.improve_ko || []).map((t) => el('li', null, t)))))));
+    box.append(el('div', { class: 'two' },
+      card('잘한 점', el('ul', { class: 'list' }, ...(r.strengths_ko || []).map((t) => el('li', null, t)))),
+      card('다음에 연습할 점', el('ul', { class: 'list' }, ...(r.improve_ko || []).map((t) => el('li', null, t))))));
   }
-  // 오류 통계
-  box.append(el('section', null, el('h2', null, '오류 유형 통계'), barsNode(errorStats(s))));
-  // 표현
+  // 미션 / 빨간 펜 집계
+  const done = s.missions.filter((m) => m.done).length;
+  const comments = Array.isArray(r.missions) ? r.missions.map((x) => (x && x.comment_ko) || '') : null;
+  box.append(el('div', { class: 'two' },
+    card(['미션 스탬프 ', el('span', { class: 'mono muted', style: 'font-size:14px;font-weight:400' }, `${done}/${s.missions.length}`)], stampsNode(s.missions, comments, false)),
+    card('빨간 펜 집계', barsNode(errorStats(s)))));
+  // 꼭 외울 표현
   if ((r.expressions || []).length) {
-    box.append(el('section', null, el('h2', null, '📌 꼭 외울 표현'),
-      table(['표현', '뜻', '예문'], r.expressions.map((x) => [x.text, x.meaning_ko, x.example]), true)));
+    box.append(card('꼭 외울 표현', ...r.expressions.map((x) => el('div', { class: 'expr' },
+      el('div', { class: 'ph' }, el('span', { class: 'hl', lang: tts }, x.text || ''), listenBtn(x.text, s.lang)),
+      el('div', { class: 'ko' }, x.meaning_ko || ''),
+      x.example ? el('div', { class: 'ex', lang: tts }, x.example) : null))));
   }
-  // 교정 노트
+  // 첨삭 노트
   const cs = corrections(s);
-  if (cs.length) {
-    box.append(el('section', { class: 'flow' }, el('h2', null, '✏️ 교정 노트'),
-      table(['내 문장', '고친 문장', '설명'], cs.map((m) => [m.text, m.correction.corrected,
-        (m.correction.errors || []).map((er) => `[${er.type}] ${er.wrong} → ${er.fix}: ${er.explain_ko || ''}`).join('\n')]), true)));
-  }
-  // 다음 추천
-  if (r.next && (r.next.scenario_ko || r.next.tip_ko)) {
-    box.append(el('section', null, el('h2', null, '다음 연습 추천'), el('p', null, el('b', null, r.next.scenario_ko || ''), r.next.tip_ko ? ' — ' + r.next.tip_ko : '')));
-  }
+  if (cs.length) box.append(card('첨삭 노트', ...cs.map((m) => correctionNode(m, true))));
   // 대화 전문
-  const tr = el('div', { class: 'transcript' });
-  for (const m of s.messages) {
-    if (!m.text || m.error) continue;
-    const line = el('div', { class: 'line' }, el('span', { class: 'who' }, m.role === 'ai' ? '🤖 AI' : '🙋 나'), el('span', { lang: L.tts }, m.text));
-    if (m.role === 'user' && m.correction && (m.correction.errors || []).length) line.append(el('div', { class: 'fixline' }, '→ ' + m.correction.corrected));
-    tr.append(line);
-  }
-  box.append(el('section', { class: 'flow' }, el('h2', null, '대화 전문'), tr));
-  // 비용
-  box.append(el('section', null, el('h2', null, 'AI 사용 비용'), table(['역할', '모델', '호출', '입력 토큰', '출력 토큰', '비용'], costRows(s).map((c) => [c.role, c.model, c.calls, c.in, c.out, `${fmtUSD(c.cost)} (${fmtKRW(c.cost)})`])),
-    el('p', { class: 'small muted' }, `합계 ${fmtUSD(totalCost())} (${fmtKRW(totalCost())}), 환율 1달러 = ${settings.fx}원 기준. AI 교정과 리포트는 참고용이며 틀릴 수 있습니다.`)));
+  const lines = s.messages.filter((m) => m.text && !m.error).map((m) => {
+    const line = el('div', { class: 'line' }, el('span', { class: 'w' }, m.role === 'ai' ? aiName(s) : '나'), el('span', { lang: tts }, m.text));
+    if (m.role === 'user' && m.correction && (m.correction.errors || []).length) line.append(el('div', { class: 'fixline', lang: tts }, '→ ' + m.correction.corrected));
+    return line;
+  });
+  box.append(el('div', { class: 'card' }, el('details', { class: 'transcript' }, el('summary', null, '대화 전문'), ...lines)));
+  // 비용 (인쇄용 — 화면에서는 오른쪽 영수증)
+  box.append(el('div', { class: 'card print-only' }, el('h2', { class: 'h-sec' }, 'AI 사용 비용'), receiptNode(s),
+    el('p', { class: 'help' }, `환율 1달러 = ${settings.fx}원 기준. AI 교정과 리포트는 참고용이며 틀릴 수 있습니다.`)));
+
+  // 오른쪽 레일
+  $('#reportNext').replaceChildren(r.next && (r.next.scenario_ko || r.next.tip_ko)
+    ? el('p', { style: 'margin:0;font-size:15px' }, el('b', null, r.next.scenario_ko || ''), r.next.tip_ko ? ' — ' + r.next.tip_ko : '')
+    : el('p', { class: 'muted small', style: 'margin:0' }, '다른 상황이나 한 단계 높은 수준으로 연습해 보세요.'));
+  $('#reportReceipt').replaceChildren(receiptNode(s));
+  $('#fileNameHint').replaceChildren('파일 이름: ', el('span', { class: 'mono' }, fileBase()));
   updateCostBadge();
 }
-function stat(v, l) { return el('div', { class: 'stat' }, el('div', { class: 'v' }, String(v)), el('div', { class: 'l' }, l)); }
+function stat(v, l) { return el('div', { class: 'stat' }, el('b', null, String(v)), el('span', null, l)); }
 function table(head, rows, pre) {
   return el('div', { class: 'tbl-wrap' }, el('table', { class: 'tbl' },
     el('thead', null, el('tr', null, ...head.map((h) => el('th', null, h)))),
@@ -1287,12 +1508,20 @@ function loadScript(src, globalName) {
     document.head.append(s);
   });
 }
-function markSaved() { session.saved = true; saveSession(); }
+function markSaved() {
+  session.saved = true;
+  saveSession();
+  const u = document.querySelector('.unsaved');
+  if (u) u.remove();
+}
 
 function exportPdf() {
   const prevTitle = document.title;
   document.title = fileBase();
-  const restore = () => { document.title = prevTitle; window.removeEventListener('afterprint', restore); };
+  const det = document.querySelector('details.transcript');
+  const wasOpen = det && det.open;
+  if (det) det.open = true;
+  const restore = () => { document.title = prevTitle; if (det) det.open = wasOpen; window.removeEventListener('afterprint', restore); };
   window.addEventListener('afterprint', restore);
   markSaved();
   toast('인쇄 창에서 대상(프린터)을 "PDF로 저장"으로 선택해 주세요.');
@@ -1449,13 +1678,15 @@ function renderVoiceRows() {
     const sel = el('select', { 'data-lang': id }, el('option', { value: '' }, '자동 선택'));
     for (const v of voicesFor(id)) sel.append(el('option', { value: v.name }, `${v.name} (${v.lang})`));
     sel.value = settings.voices[id] || '';
-    const test = el('button', { type: 'button', class: 'btn sm', onclick: () => {
+    const test = el('button', { type: 'button', class: 'icon-btn', onclick: () => {
       const prevV = settings.voices[id]; const prevR = settings.rate;
       settings.voices[id] = sel.value; settings.rate = Number($('#setRate').value);
       speak({ en: 'Hello! Nice to meet you.', ja: 'こんにちは。はじめまして。', es: '¡Hola! Mucho gusto.' }[id], id);
       settings.voices[id] = prevV; settings.rate = prevR;
-    } }, '▶ 들어 보기');
-    box.append(el('label', { class: 'field' }, el('span', null, `${L.flag} ${L.name} 목소리`), el('div', { class: 'row' }, el('div', { class: 'grow' }, sel), test)));
+    }, 'aria-label': `${L.name} 목소리 들어 보기` }, icon('play'));
+    sel.setAttribute('aria-label', `${L.name} 목소리`);
+    sel.className = 'input';
+    box.append(el('div', { class: 'voice-row' }, langBadge(id, true), sel, test));
   }
   if (!voices.length) box.append(el('p', { class: 'small muted' }, '이 브라우저에서 사용할 수 있는 음성 목록을 아직 불러오지 못했습니다. 잠시 후 다시 열어 주세요.'));
 }
@@ -1488,6 +1719,7 @@ function saveSettingsDialog() {
 function initSettings() {
   $('#btnSettings').onclick = openSettings;
   $('#setSave').onclick = saveSettingsDialog;
+  $('#micTestBtn').onclick = () => micTest().catch((e) => { $('#micTestResult').textContent = '마이크 테스트 실패: ' + e.message; $('#micTestBtn').disabled = false; });
   $('#setRate').oninput = () => { $('#rateVal').textContent = `${Number($('#setRate').value).toFixed(2)}배`; };
   for (const id of ['#setPartner', '#setCoach', '#setReport']) $(id).addEventListener('change', renderPriceRows);
   $('#setKeyChange').onclick = () => { $('#settingsDlg').close(); showView('key'); $('#keyInput').focus(); };
@@ -1540,10 +1772,7 @@ function init() {
   $('#endBtn').onclick = endSession;
   $('#turnEnd').onclick = endSession;
   $('#turnMore').onclick = () => $('#turnNotice').classList.add('hidden');
-  $('#sideToggle').onclick = () => {
-    const open = $('#chatSide').classList.toggle('open');
-    $('#sideToggle').textContent = open ? '미션 접기' : '미션 보기';
-  };
+  $('#missionStrip').onclick = () => { $('#chatSide').classList.toggle('open'); renderMissionStrip(); };
   $('#backChat').onclick = () => {
     session.endedAt = null; session.report = session.report || null; saveSession(); openChat();
   };

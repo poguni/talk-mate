@@ -17,22 +17,23 @@ OpenRouter API 키 하나로 **Gemini 3.8 Flash**(대화 상대), **GPT-6 Luna**
 | `DESIGN.md` | 디자인 가이드(콘셉트, 토큰, 컴포넌트, 화면 명세) |
 | `design-mockup.html` | 디자인 시안. 브라우저로 열어 7개 화면과 밝은·어두운 테마를 확인 |
 
-빌드 과정이 없습니다. 세 파일을 같은 폴더에 두면 됩니다.
+빌드 과정이 없습니다. `index.html`, `style.css`, `app.js` 세 파일을 같은 폴더에 두면 됩니다. 화면 디자인은 `DESIGN.md`(Café Notebook)를 따릅니다.
 
 ## GitHub Pages로 배포하기
 
-1. GitHub에서 새 저장소를 만듭니다(예: `talkmate`).
-2. 이 폴더의 파일(`index.html`, `style.css`, `app.js`, `README.md`)을 저장소 최상위에 올립니다.
+정식 저장소: [poguni/talk-mate](https://github.com/poguni/talk-mate)
+
+1. 이 폴더의 파일(`index.html`, `style.css`, `app.js`, `README.md`, `DESIGN.md`, `design-mockup.html`)을 저장소 최상위에 덮어씁니다.
    ```bash
-   git init
-   git add index.html style.css app.js README.md
-   git commit -m "토크메이트 첫 버전"
-   git branch -M main
-   git remote add origin https://github.com/<사용자명>/talkmate.git
-   git push -u origin main
+   git clone https://github.com/poguni/talk-mate.git
+   cd talk-mate
+   # 압축을 푼 talkmate 폴더의 파일을 이 폴더에 복사한 뒤
+   git add .
+   git commit -m "Café Notebook 디자인 적용"
+   git push origin main
    ```
-3. 저장소의 **Settings → Pages**에서 Source를 `Deploy from a branch`, Branch를 `main` / `/(root)`로 정하고 저장합니다.
-4. 1~2분 뒤 `https://<사용자명>.github.io/talkmate/`로 접속합니다.
+2. 저장소의 **Settings → Pages**에서 Source가 `Deploy from a branch`, Branch가 `main` / `/(root)`인지 확인합니다.
+3. 1~2분 뒤 `https://poguni.github.io/talk-mate/`로 접속합니다. 예전 화면이 보이면 **Ctrl+F5**(모바일은 새로고침 두세 번)로 새로 불러옵니다.
 
 > 마이크(음성 인식)는 **HTTPS 주소**에서만 안정적으로 동작합니다. GitHub Pages는 HTTPS이므로 그대로 쓰면 됩니다.
 > PC에서 파일을 바로 열면(`file://`) 마이크 권한이 거부될 수 있으니, 이때는 폴더에서 `python -m http.server 8000`을 실행한 뒤 `http://localhost:8000`으로 여세요.
@@ -69,6 +70,37 @@ OpenRouter API 키 하나로 **Gemini 3.8 Flash**(대화 상대), **GPT-6 Luna**
 - 음성 인식은 브라우저가 제공하는 기능으로, 음성이 브라우저 회사(마이크로소프트·구글)의 서버로 보내져 처리될 수 있습니다.
 - 갤럭시에서 외국어 음성이 어색하면 **설정 → 일반 관리 → 글자 읽어주기(TTS)**에서 언어 데이터를 내려받거나, 앱의 **설정 → 음성**에서 목소리를 바꿔 보세요.
 
+## 음성 인식 문제 해결
+
+"음성이 감지되지 않았습니다"처럼 마이크가 안 될 때는 아래 순서로 확인해 주세요.
+
+### 1단계: 앱 안에서 원인 확인
+- **⚙️ 설정 → 🎤 마이크 테스트**를 누르고 5초 동안 말해 보세요. 브라우저가 어떤 마이크에서 소리를 받는지, 소리가 실제로 들어오는지 알려 줍니다.
+- 마이크를 누른 뒤 실패하면 안내 문구가 원인별로 다르게 나옵니다.
+  - "마이크가 열리지 않았습니다" → 권한 문제(2단계)
+  - "마이크에 소리가 들어오지 않습니다" → 다른 마이크가 기본 장치로 잡혀 있거나 음소거(3단계)
+  - "소리는 들어오지만 말소리로 인식되지 않았습니다" → 입력 볼륨이 너무 작음(3단계)
+
+### 2단계: 권한 (PC Edge)
+1. 주소창 왼쪽 자물쇠(사이트 정보) 아이콘 → **마이크: 허용** → 새로고침
+2. Windows **설정 → 개인 정보 및 보안 → 마이크**에서 '마이크 액세스', '앱에서 마이크에 액세스하도록 허용', **'데스크톱 앱에서 마이크에 액세스하도록 허용'**이 모두 켜져 있는지 확인 (Edge는 데스크톱 앱입니다)
+
+### 3단계: 기본 마이크와 볼륨 (PC Edge)
+- 음성 인식은 **Windows의 기본 입력 장치**를 사용합니다. 노트북 내장 마이크, 웹캠 마이크, 헤드셋 마이크가 여러 개 있으면 엉뚱한 장치가 기본으로 잡혀 있는 경우가 가장 흔합니다.
+- Windows **설정 → 시스템 → 소리 → 입력**에서 실제로 쓰는 마이크를 고르고, 말할 때 볼륨 막대가 움직이는지, 입력 볼륨이 충분한지(70% 이상 권장) 확인해 주세요.
+- Edge 주소창에 `edge://settings/content/microphone`을 입력하면 Edge가 쓰는 마이크도 고를 수 있습니다. 같은 장치로 맞춰 주세요.
+- 줌, 팀즈 같은 다른 앱이 마이크를 쓰고 있으면 닫고 다시 시도해 주세요.
+
+### 4단계: 그래도 안 되면 (PC)
+- 같은 주소를 **크롬**으로 열어 보세요. 크롬에서는 되고 Edge에서만 안 되면 Edge의 음성 인식 서비스 문제입니다. Edge의 음성 인식은 버전에 따라 불안정하다는 보고가 있습니다.
+- 회사·학교 네트워크는 음성 인식 서버를 막는 경우가 있습니다. 다른 네트워크(휴대폰 테더링 등)에서 시도해 보세요.
+- 음성 인식이 안 되어도 타자로 입력하면 모든 기능(교정, 힌트, 리포트)을 그대로 쓸 수 있습니다.
+
+### 갤럭시 삼성 인터넷
+- 휴대폰 **설정 → 애플리케이션 → 삼성 인터넷 → 권한 → 마이크: 허용**
+- 삼성 인터넷의 사이트 권한에서 이 주소의 마이크가 차단되어 있지 않은지 확인
+- 삼성 인터넷의 음성 인식은 휴대폰의 Google 음성 인식 서비스를 사용합니다. **Google 앱**이 설치·활성화되어 있고 최신 버전인지 확인해 주세요. 안 되면 같은 주소를 크롬으로 열어 비교해 보세요.
+
 ## 저장되는 데이터
 
 | 데이터 | 위치 | 언제 사라지나 |
@@ -86,7 +118,8 @@ OpenRouter API 키 하나로 **Gemini 3.8 Flash**(대화 상대), **GPT-6 Luna**
 
 ## 외부 라이브러리
 
-내보내기 버튼을 누를 때만 CDN에서 불러옵니다.
+- 글꼴: Google Fonts의 IBM Plex Sans KR, Nanum Pen Script(빨간 펜 손글씨), JetBrains Mono, Noto Sans JP. 인터넷이 안 되면 시스템 글꼴로 대신 표시됩니다.
+- 아래 두 라이브러리는 내보내기 버튼을 누를 때만 CDN에서 불러옵니다.
 
 - [SheetJS (xlsx) 0.18.5](https://cdnjs.com/libraries/xlsx): Excel 생성
 - [docx 8.5.0](https://www.npmjs.com/package/docx): Word 생성
