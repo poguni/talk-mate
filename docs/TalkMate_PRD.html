@@ -1,0 +1,1122 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 회화 파트너(롤플레이 상황극): 제품 기획서(PRD)</title>
+<style>
+:root{--bg:#fafaf8;--panel:#f1f0ec;--text:#1f2328;--muted:#656d76;--line:#dcdad3;--accent:#2f6fed;--accent-bg:#e6eefe;--code:#eceae4;--star:#d98a00}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#17181a;--panel:#1f2124;--text:#e6e6e3;--muted:#9aa0a6;--line:#33363a;--accent:#7aa2ff;--accent-bg:#26324d;--code:#2a2c30;--star:#f0b43c}}
+:root[data-theme=dark]{--bg:#17181a;--panel:#1f2124;--text:#e6e6e3;--muted:#9aa0a6;--line:#33363a;--accent:#7aa2ff;--accent-bg:#26324d;--code:#2a2c30;--star:#f0b43c}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.75 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;word-break:keep-all}
+#side{position:fixed;inset:0 auto 0 0;width:300px;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;z-index:20;transition:transform .2s}
+.side-top{padding:16px 16px 10px;border-bottom:1px solid var(--line)}
+.side-top h2{font-size:15px;margin:0 0 10px;line-height:1.4}
+#q{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font:inherit;font-size:14px}
+.dl{display:flex;gap:6px;margin-top:10px}
+.dl a{flex:1;text-align:center;font-size:13px;padding:6px 4px;border:1px solid var(--line);border-radius:8px;color:var(--text);text-decoration:none;background:var(--bg)}
+.dl a:hover{border-color:var(--accent);color:var(--accent)}
+#nav{overflow-y:auto;padding:8px 8px 40px;flex:1}
+.grp{margin:2px 0}
+.grp-h{display:flex;width:100%;align-items:center;justify-content:space-between;background:none;border:0;color:var(--text);font:inherit;font-size:14px;font-weight:700;padding:8px;border-radius:6px;cursor:pointer;text-align:left}
+.grp-h.static{cursor:default;color:var(--muted);font-size:12px;letter-spacing:.04em}
+.grp-h a{color:inherit;text-decoration:none;flex:1}
+.grp-h:hover:not(.static){background:var(--accent-bg)}
+.chev{transition:transform .15s;color:var(--muted)}
+.grp:not(.open) .chev{transform:rotate(-90deg)}
+.grp:not(.open) ul{display:none}
+.grp ul{list-style:none;margin:0 0 6px;padding:0}
+.grp li a{display:block;padding:5px 10px 5px 18px;font-size:13px;line-height:1.45;color:var(--muted);text-decoration:none;border-left:2px solid transparent;border-radius:0 6px 6px 0}
+.grp li a:hover{color:var(--text);background:var(--accent-bg)}
+.grp li a.active{color:var(--accent);border-left-color:var(--accent);background:var(--accent-bg);font-weight:600}
+li.hide{display:none}
+main{margin-left:300px;padding:40px 32px 120px}
+article{max-width:820px;margin:0 auto}
+h1{font-size:28px;line-height:1.35;margin:1.6em 0 .6em;padding-bottom:.3em;border-bottom:2px solid var(--line)}
+article>h1:first-child{margin-top:0}
+h2{font-size:21px;margin:2em 0 .6em}
+h3{font-size:18px;margin:2em 0 .5em;padding:10px 14px;background:var(--accent-bg);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;line-height:1.5}
+blockquote{margin:1em 0;padding:.4em 1em;border-left:4px solid var(--line);color:var(--muted);background:var(--panel);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;font-size:14.5px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--panel)}
+code{background:var(--code);padding:1px 6px;border-radius:4px;font-size:.9em}
+hr{border:0;border-top:1px solid var(--line);margin:2.5em 0}
+ul,ol{padding-left:1.4em}
+li{margin:.2em 0}
+.stars{color:var(--star);letter-spacing:1px;font-weight:700}
+#menu,#top{position:fixed;z-index:30;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:10px;cursor:pointer;font-size:16px}
+#menu{display:none;top:12px;left:12px;width:42px;height:42px}
+#top{right:16px;bottom:16px;width:42px;height:42px;opacity:0;pointer-events:none;transition:opacity .2s}
+#top.show{opacity:1;pointer-events:auto}
+#theme{background:none;border:1px solid var(--line);color:var(--text);border-radius:8px;cursor:pointer;padding:6px 8px;font-size:13px;margin-left:6px}
+#scrim{display:none}
+@media (max-width:900px){
+ #side{transform:translateX(-100%);width:min(320px,86vw)}
+ body.open #side{transform:none}
+ body.open #scrim{display:block;position:fixed;inset:0;background:#0006;z-index:15}
+ #menu{display:block}
+ body.open #menu{display:none}
+ main{margin-left:0;padding:70px 16px 100px}
+ h1{font-size:23px}
+}
+@media print{#side,#menu,#top{display:none}main{margin:0}}
+</style>
+</head>
+<body>
+<button id="menu" aria-label="목차 열기">☰</button>
+<div id="scrim"></div>
+<aside id="side">
+ <div class="side-top">
+  <h2>토크메이트 PRD v0.2 <button id="theme" title="테마 전환">🌓</button></h2>
+  <input id="q" type="search" placeholder="목차 검색 (예: 음성, 비용)" aria-label="목차 검색">
+  <div class="dl">
+   <a href="prd-conversation-partner.md" download="prd-conversation-partner.md">⬇ MD</a>
+   <a id="dlhtml" href="prd-conversation-partner.html" download="prd-conversation-partner.html">⬇ HTML</a>
+  </div>
+ </div>
+ <nav id="nav"><div class="grp"><button class="grp-h" aria-expanded="false"><a href="#변경-이력">변경 이력</a></button><ul></ul></div><div class="grp open"><button class="grp-h" aria-expanded="true"><a href="#1-개요">1. 개요</a><span class=chev>▾</span></button><ul><li><a href="#1-1-배경">1.1 배경</a></li><li><a href="#1-2-시장-조사-요약">1.2 시장 조사 요약</a></li><li><a href="#1-3-목표">1.3 목표</a></li><li><a href="#1-4-범위에서-제외하는-것-non-goals">1.4 범위에서 제외하는 것 (Non-goals)</a></li></ul></div><div class="grp"><button class="grp-h" aria-expanded="false"><a href="#2-로그인-db가-꼭-필요한가-질문-3-에-대한-답">2. 로그인·DB가 꼭 필요한가? (질문 (3)에 대한 답)</a></button><ul></ul></div><div class="grp open"><button class="grp-h" aria-expanded="true"><a href="#3-사용자와-사용-시나리오">3. 사용자와 사용 시나리오</a><span class=chev>▾</span></button><ul><li><a href="#3-1-주-사용자">3.1 주 사용자</a></li><li><a href="#3-2-대표-시나리오">3.2 대표 시나리오</a></li></ul></div><div class="grp"><button class="grp-h" aria-expanded="false"><a href="#4-전체-사용-흐름">4. 전체 사용 흐름</a></button><ul></ul></div><div class="grp open"><button class="grp-h" aria-expanded="true"><a href="#5-기능-요구사항">5. 기능 요구사항</a><span class=chev>▾</span></button><ul><li><a href="#f0-api-키와-설정-p0">F0. API 키와 설정 (P0)</a></li><li><a href="#f1-연습-설정-p0">F1. 연습 설정 (P0)</a></li><li><a href="#f2-회화-진행-p0">F2. 회화 진행 (P0)</a></li><li><a href="#f3-문장별-교정-p0">F3. 문장별 교정 (P0)</a></li><li><a href="#f4-대화-후-리포트-p0">F4. 대화 후 리포트 (P0)</a></li><li><a href="#f5-비용-표시-p0">F5. 비용 표시 (P0)</a></li><li><a href="#f6-저장과-내보내기-p0">F6. 저장과 내보내기 (P0)</a></li></ul></div><div class="grp open"><button class="grp-h" aria-expanded="true"><a href="#6-ai-연동-설계">6. AI 연동 설계</a><span class=chev>▾</span></button><ul><li><a href="#6-1-openrouter-기본-사항">6.1 OpenRouter 기본 사항</a></li><li><a href="#6-2-모델과-역할-분담-기본값-제안-설정에서-변경-가능">6.2 모델과 역할 분담 (기본값 제안, 설정에서 변경 가능)</a></li><li><a href="#6-3-예상-비용-15턴-대화-1회-기준-대략">6.3 예상 비용 (15턴 대화 1회 기준, 대략)</a></li><li><a href="#6-4-프롬프트-원칙">6.4 프롬프트 원칙</a></li><li><a href="#6-5-교정-json-예시">6.5 교정 JSON 예시</a></li><li><a href="#6-6-안정성">6.6 안정성</a></li></ul></div><div class="grp"><button class="grp-h" aria-expanded="false"><a href="#7-음성-기능">7. 음성 기능</a></button><ul></ul></div><div class="grp open"><button class="grp-h" aria-expanded="true"><a href="#8-데이터와-보안">8. 데이터와 보안</a><span class=chev>▾</span></button><ul><li><a href="#8-1-api-키-보관-방식-확정">8.1 API 키 보관 방식 (확정)</a></li><li><a href="#8-2-데이터-보관">8.2 데이터 보관</a></li><li><a href="#8-3-보안-원칙">8.3 보안 원칙</a></li></ul></div><div class="grp"><button class="grp-h" aria-expanded="false"><a href="#9-기술-스택">9. 기술 스택</a></button><ul></ul></div><div class="grp"><button class="grp-h" aria-expanded="false"><a href="#10-화면-구성">10. 화면 구성</a></button><ul></ul></div><div class="grp"><button class="grp-h" aria-expanded="false"><a href="#11-비기능-요구사항">11. 비기능 요구사항</a></button><ul></ul></div><div class="grp"><button class="grp-h" aria-expanded="false"><a href="#12-개발-단계-마일스톤">12. 개발 단계 (마일스톤)</a></button><ul></ul></div><div class="grp"><button class="grp-h" aria-expanded="false"><a href="#13-위험-요소와-대응">13. 위험 요소와 대응</a></button><ul></ul></div><div class="grp open"><button class="grp-h" aria-expanded="true"><a href="#14-결정된-사항과-확인할-사항">14. 결정된 사항과 확인할 사항</a><span class=chev>▾</span></button><ul><li><a href="#14-1-결정된-사항-v0-2">14.1 결정된 사항 (v0.2)</a></li><li><a href="#14-2-남은-확인-사항">14.2 남은 확인 사항</a></li></ul></div><div class="grp"><button class="grp-h" aria-expanded="false"><a href="#참고-자료">참고 자료</a></button><ul></ul></div></nav>
+</aside>
+<main><article id="doc"><h1 id="ai-회화-파트너-롤플레이-상황극-제품-기획서-prd">AI 회화 파트너(롤플레이 상황극): 제품 기획서(PRD)</h1>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>문서 버전</td>
+<td>v0.2</td>
+</tr>
+<tr>
+<td>작성일</td>
+<td>2026-10-16</td>
+</tr>
+<tr>
+<td>가칭</td>
+<td><strong>토크메이트(TalkMate)</strong>: 상황극으로 연습하는 AI 외국어 회화</td>
+</tr>
+<tr>
+<td>형태</td>
+<td>정적 웹 앱(index.html·style.css·app.js), GitHub Pages 배포, 개인 전용(로그인·서버·DB 없음)</td>
+</tr>
+<tr>
+<td>원 아이디어</td>
+<td><code>app-ideas-hobbies.md</code>의 3-7</td>
+</tr>
+</tbody>
+</table>
+<h2 id="변경-이력">변경 이력</h2>
+<table>
+<thead>
+<tr>
+<th>버전</th>
+<th>날짜</th>
+<th>주요 변경</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v0.1</td>
+<td>2026-10-16</td>
+<td>최초 작성. 자료 조사 결과, OpenRouter 3개 모델 역할 분담, 로그인·DB 불필요 판단, 파일 내보내기(PDF·Word·Excel) 중심 저장 방식 반영</td>
+</tr>
+<tr>
+<td>v0.2</td>
+<td>2026-10-16</td>
+<td>확인 사항 확정: 키는 sessionStorage 기본 + localStorage 저장 옵션, 언어별 기본 수준(영어 초중급·일본어 중급·스페인어 초급), Edge·삼성 인터넷 기준 음성 입력을 MVP에 포함, 대화 중 즉시 교정, 설정 기억, 앱 이름 확정, Word 내보내기를 P0로 상향, 파일 이름 영문화</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="1-개요">1. 개요</h2>
+<h3 id="1-1-배경">1.1 배경</h3>
+<p>외국어 회화는 "실제로 말해 보는 시간"이 가장 부족합니다. 시중 앱(Speak, Praktika, Talkpal 등)은 롤플레이와 AI 튜터를 제공하지만 월 구독료가 들고, 상황·교정 방식·저장 형식을 내 마음대로 바꾸기 어렵습니다.</p>
+<p>이 앱은 이미 가진 <strong>OpenRouter API 키 하나</strong>로 Claude Sonnet 5.5, GPT-6 Luna, Gemini 3.8 Flash를 불러, 상황극 회화와 교정을 쓴 만큼만 비용을 내고 이용하는 개인용 도구입니다.</p>
+<h3 id="1-2-시장-조사-요약">1.2 시장 조사 요약</h3>
+<table>
+<thead>
+<tr>
+<th>앱</th>
+<th>강점</th>
+<th>한계</th>
+<th>이 앱에 반영할 점</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Speak</td>
+<td>초급자용 체계적 과정, 롤플레이 난이도 상승</td>
+<td>구독형, 지원 언어 제한</td>
+<td>난이도(CEFR)별 상황 설계</td>
+</tr>
+<tr>
+<td>Praktika</td>
+<td>아바타 튜터, 목표 기반 수업</td>
+<td>문화적 뉘앙스 부족, 안정적 연결 필요</td>
+<td>목표 표현(미션) 제시</td>
+</tr>
+<tr>
+<td>Talkpal</td>
+<td>57개 언어, 여행·업무 롤플레이, 음성 통화 모드, 토론</td>
+<td>높은 수준에서 내용이 얕음, 발음 피드백 약함</td>
+<td>다양한 상황 + 사용자 정의 상황</td>
+</tr>
+<tr>
+<td>ChatGPT 등 범용 챗봇</td>
+<td>자유도 높음</td>
+<td>매번 프롬프트를 새로 써야 함, 교정·통계가 체계적이지 않음</td>
+<td>상황·교정 프롬프트를 앱이 대신 관리</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>출처는 문서 끝 "참고 자료"에 있습니다. 비교 블로그 기반이므로 세부 수치는 참고용입니다.</p>
+</blockquote>
+<p><strong>차별점</strong>
+1. 구독료 없이 사용량만큼 과금되고, 호출 전에 예상 비용을 보여 줍니다.
+2. 상황·난이도·교정 강도를 사용자가 직접 정합니다.
+3. 대화 기록과 교정 노트를 <strong>PDF·Word·Excel 파일</strong>로 내 PC에 남깁니다. 서버에는 아무것도 저장하지 않습니다.
+4. 영어·일본어·스페인어 3개 언어를 한 앱에서 연습합니다.</p>
+<h3 id="1-3-목표">1.3 목표</h3>
+<ul>
+<li>상황(공항, 식당, 호텔 등)을 고르면 1분 안에 회화 연습을 시작합니다.</li>
+<li>말하기(음성) 또는 타자(텍스트)로 대화하고, 문장마다 교정과 더 자연스러운 표현을 받습니다.</li>
+<li>대화가 끝나면 요약(새로 쓴 표현, 오류 유형 통계)을 받고 파일로 저장합니다.</li>
+<li>로그인, 서버, DB 없이 브라우저만으로 동작합니다.</li>
+</ul>
+<h3 id="1-4-범위에서-제외하는-것-non-goals">1.4 범위에서 제외하는 것 (Non-goals)</h3>
+<ul>
+<li>로그인, 회원가입, 서버 백엔드, 클라우드 DB, 기기 간 동기화</li>
+<li>정밀한 발음 평가(음소 단위 점수). 브라우저 음성 인식 결과를 원문과 비교하는 수준까지만 다룹니다.</li>
+<li>실시간 음성 대화 API(초저지연 음성 대 음성) 연동</li>
+<li>단어장 SRS 기능(별도 앱 3-2에서 다루고, 이 앱은 Excel 내보내기로 연결)</li>
+</ul>
+<hr />
+<h2 id="2-로그인-db가-꼭-필요한가-질문-3-에-대한-답">2. 로그인·DB가 꼭 필요한가? (질문 (3)에 대한 답)</h2>
+<p><strong>결론: 필요하지 않습니다.</strong> 원하시는 방식(키 입력 → 회화 연습 → 필요하면 파일로 저장)에는 로그인과 DB가 없는 구조가 더 알맞습니다.</p>
+<table>
+<thead>
+<tr>
+<th>질문</th>
+<th>로그인·DB가 필요한 경우</th>
+<th>이 앱의 상황</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>여러 사람이 쓰는가?</td>
+<td>사용자별 데이터 분리가 필요</td>
+<td>본인 혼자 사용</td>
+</tr>
+<tr>
+<td>여러 기기에서 이어서 쓰는가?</td>
+<td>클라우드 동기화 필요</td>
+<td>파일로 저장해 두면 됨</td>
+</tr>
+<tr>
+<td>API 키를 서버에 숨겨야 하는가?</td>
+<td>남에게 앱을 공개하고 내 키로 서비스할 때</td>
+<td>각자 자기 키를 브라우저에서 입력하므로 서버 불필요</td>
+</tr>
+<tr>
+<td>기록이 계속 쌓여야 하는가?</td>
+<td>장기 통계를 서버에서 계산</td>
+<td>내보낸 Excel 파일을 다시 불러와 누적(선택 기능)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>로그인·DB가 없을 때 감수할 점</strong>
+- 브라우저를 닫으면 진행 중이던 대화는 사라집니다. 대화가 끝나면 파일로 저장해야 합니다(종료 시 저장 안내 창 표시).
+- 기기를 바꾸면 이전 기록을 자동으로 볼 수 없습니다. 저장한 파일로 확인합니다.</p>
+<hr />
+<h2 id="3-사용자와-사용-시나리오">3. 사용자와 사용 시나리오</h2>
+<h3 id="3-1-주-사용자">3.1 주 사용자</h3>
+<ul>
+<li><strong>본인(개발자 겸 유일한 사용자)</strong>: 영어·일본어·스페인어를 공부하며, 여행을 자주 다닙니다. 데이터 분석에 익숙해 Excel로 학습 기록을 정리하는 것을 좋아합니다.</li>
+</ul>
+<h3 id="3-2-대표-시나리오">3.2 대표 시나리오</h3>
+<blockquote>
+<p>다음 달 스페인 여행 전에 식당 주문 상황을 연습하려고 합니다. 스페인어 수준은 A2입니다.</p>
+</blockquote>
+<ol>
+<li>GitHub Pages 주소로 앱을 열고 OpenRouter API 키를 입력합니다.</li>
+<li>언어(스페인어), 수준(A2), 상황(식당: 주문과 계산)을 고릅니다. 화면에 "이번 대화의 미션"(예: 추천 메뉴 묻기, 알레르기 말하기, 계산서 요청하기)과 예상 비용(약 몇십 원)이 표시됩니다.</li>
+<li>AI 웨이터가 스페인어로 말을 걸고, 브라우저가 소리 내어 읽어 줍니다.</li>
+<li>마이크 버튼을 누르고 스페인어로 대답합니다. 막히면 <strong>힌트</strong> 버튼으로 한국어 도움말과 예시 문장을 봅니다.</li>
+<li>내 문장 옆에 교정 결과가 표시됩니다: 틀린 부분, 고친 문장, 더 자연스러운 표현, 짧은 설명(한국어).</li>
+<li>10~15턴 후 <strong>대화 종료</strong>를 누르면 요약 리포트(미션 달성 여부, 새로 쓴 표현, 오류 유형 통계, 다음 연습 추천)가 나옵니다.</li>
+<li><strong>PDF로 저장</strong>(대화 전문과 리포트), <strong>Excel로 저장</strong>(교정 노트, 표현 목록)을 눌러 PC에 보관합니다.</li>
+<li>브라우저 탭을 닫으면 API 키와 대화 내용이 모두 사라집니다.</li>
+</ol>
+<hr />
+<h2 id="4-전체-사용-흐름">4. 전체 사용 흐름</h2>
+<pre><code>[0. 키 입력]   OpenRouter API 키 입력(이번 세션에만 보관), 연결 테스트
+     ↓
+[1. 연습 설정] 언어 · 수준(CEFR) · 상황 · 교정 방식 · 입력 방식(음성/텍스트) · 모델 선택
+     ↓          → 미션과 예상 비용 표시
+[2. 회화]      AI 상대 발화(TTS) ↔ 내 발화(음성 인식/타자)
+     ↓          → 문장별 교정, 힌트, 번역 보기, 다시 말하기
+[3. 리포트]    미션 달성, 새 표현, 오류 유형 통계, 추천 연습
+     ↓
+[4. 저장]      PDF · Word · Excel (+ 선택: JSON 백업)
+</code></pre>
+<hr />
+<h2 id="5-기능-요구사항">5. 기능 요구사항</h2>
+<p>우선순위: P0(MVP 필수), P1(2차), P2(있으면 좋음)</p>
+<h3 id="f0-api-키와-설정-p0">F0. API 키와 설정 (P0)</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>요구사항</th>
+<th>우선순위</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F0-1</td>
+<td>OpenRouter API 키를 화면에서 입력. 코드에 하드 코딩하지 않음</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F0-2</td>
+<td>키는 기본으로 <strong>sessionStorage</strong>에 보관하여 탭(세션)을 닫으면 삭제. 선택 시 <strong>localStorage에 저장</strong>해 다음에 다시 입력하지 않음</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F0-3</td>
+<td>"연결 테스트" 버튼: 짧은 요청으로 키가 유효한지 확인</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F0-4</td>
+<td>"키 지우기" 버튼: 즉시 삭제</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F0-5</td>
+<td>모델 슬러그(OpenRouter 모델 ID)는 설정에서 수정 가능. 연결 테스트 때 OpenRouter 모델 목록으로 ID를 확인하고 단가를 갱신</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F0-6</td>
+<td>키 입력란은 <code>type="password"</code>, 화면·내보내기 파일·콘솔 로그에 키를 출력하지 않음</td>
+<td>P0</td>
+</tr>
+</tbody>
+</table>
+<h3 id="f1-연습-설정-p0">F1. 연습 설정 (P0)</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>요구사항</th>
+<th>우선순위</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1-1</td>
+<td>언어 선택: 영어, 일본어, 스페인어 (확장 가능한 구조)</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F1-2</td>
+<td>수준 선택: CEFR A1~C1과 A2+(초중급) (일본어는 JLPT N5~N1 병기). 기본값: 영어 A2+ 초중급, 일본어 B1 중급(N3), 스페인어 A1 입문·초급</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F1-3</td>
+<td>상황 선택: 기본 상황 목록(아래 표)에서 선택</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F1-4</td>
+<td>사용자 정의 상황: 장소·내 역할·AI 역할·목표를 직접 입력</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F1-5</td>
+<td>상황마다 미션 2~4개를 AI가 생성하거나 기본값 사용</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F1-6</td>
+<td>교정 방식: 대화 중 문장마다 즉시 교정(확정). 대화 후 몰아서 교정·교정 끄기는 P2</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F1-7</td>
+<td>AI 말 속도·길이 조절(짧게/보통/길게), 존댓말·반말(일본어·스페인어 tú/usted) 선택</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F1-9</td>
+<td>설정(언어·수준·말투·상황·모델·음성)을 localStorage에 기억</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F1-8</td>
+<td>여행 대비 모드: 여행 국가·도시를 입력하면 현지 상황(예: 마드리드 지하철, 오사카 이자카야)으로 상황을 맞춤</td>
+<td>P0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>기본 상황 목록 (초안)</strong></p>
+<table>
+<thead>
+<tr>
+<th>분류</th>
+<th>상황</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>여행</td>
+<td>공항 체크인·입국 심사, 호텔 체크인·문제 해결, 식당 주문·계산, 길 묻기·대중교통, 쇼핑·환불, 약국·병원</td>
+</tr>
+<tr>
+<td>일상</td>
+<td>자기소개·스몰토크, 취미 이야기, 전화 예약</td>
+</tr>
+<tr>
+<td>학습</td>
+<td>자유 대화(주제 지정), 토론(찬반), 사진 묘사(P2)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="f2-회화-진행-p0">F2. 회화 진행 (P0)</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>요구사항</th>
+<th>우선순위</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F2-1</td>
+<td>AI가 상황 속 역할로 먼저 말을 걸고, 수준에 맞는 어휘·문장 길이로 대화를 이어 감</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F2-2</td>
+<td>텍스트 입력</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F2-3</td>
+<td>음성 입력: Web Speech API 음성 인식(크롬·엣지). 인식 결과를 보내기 전에 수정 가능</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F2-4</td>
+<td>AI 발화 음성 재생: 브라우저 음성 합성(speechSynthesis). 다시 듣기, 속도 조절</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F2-5</td>
+<td><strong>힌트</strong>: 지금 할 만한 말 2~3개를 예시로 제시(한국어 설명 포함)</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F2-6</td>
+<td><strong>번역 보기</strong>: AI 발화를 한국어로 보기(기본은 숨김, 클릭 시 표시)</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F2-7</td>
+<td>응답을 스트리밍으로 표시해 기다리는 시간을 줄임</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F2-8</td>
+<td>미션 체크리스트: 대화 중 달성한 미션을 자동 표시(직접 체크도 가능)</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F2-9</td>
+<td>다시 말하기: 교정 받은 문장을 다시 말해 보고 일치율 표시</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>F2-10</td>
+<td>모르는 단어 클릭 → 뜻과 예문 보기, 표현 목록에 담기</td>
+<td>P2</td>
+</tr>
+</tbody>
+</table>
+<h3 id="f3-문장별-교정-p0">F3. 문장별 교정 (P0)</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>요구사항</th>
+<th>우선순위</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F3-1</td>
+<td>내가 보낸 문장마다 교정 결과를 JSON으로 받아 표시: 원문, 고친 문장, 틀린 부분 강조, 오류 유형, 한국어 설명 1~2줄</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F3-2</td>
+<td><strong>더 자연스러운 표현</strong> 1~2개 제안(문법상 맞아도 원어민이 더 자주 쓰는 표현)</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F3-3</td>
+<td>오류 유형 분류(예: 시제, 관사, 성·수 일치, 어순, 조사, 어휘 선택, 높임말, 철자)</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F3-4</td>
+<td>대화 상대 AI는 대화 흐름을 깨지 않도록 자연스럽게 바꿔 말하기(recast)만 하고, 명시적 교정은 별도 패널에 표시</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F3-5</td>
+<td>교정이 틀렸다고 생각되면 "이의 있음" 표시 → 다른 모델로 재검토(P2)</td>
+<td>P2</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>설계 근거</strong>: 연구에 따르면 자연스럽게 고쳐 말해 주기(recast)는 대화 흐름과 심리적 부담 면에서 유리하고, 명시적 교정은 학습자가 실제로 고쳐 말하는 비율이 더 높습니다. 그래서 대화 안에서는 recast, 화면 옆에서는 명시적 교정을 함께 제공합니다.</p>
+</blockquote>
+<h3 id="f4-대화-후-리포트-p0">F4. 대화 후 리포트 (P0)</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>요구사항</th>
+<th>우선순위</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F4-1</td>
+<td>미션 달성 여부, 총 턴 수, 내 발화 단어 수</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F4-2</td>
+<td>오류 유형별 횟수 표와 막대그래프</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F4-3</td>
+<td>오늘 새로 쓴 표현 / 꼭 외울 표현 5~10개 (원문, 뜻, 예문)</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F4-4</td>
+<td>잘한 점 1~2개, 다음에 연습할 점 1~2개 (한국어)</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F4-5</td>
+<td>다음 추천 상황과 수준</td>
+<td>P1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="f5-비용-표시-p0">F5. 비용 표시 (P0)</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>요구사항</th>
+<th>우선순위</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F5-1</td>
+<td>연습 시작 전 예상 비용(턴 수 × 모델 단가 기준) 표시</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F5-2</td>
+<td>대화 중 누적 비용(응답의 usage 정보 기준) 실시간 표시</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F5-3</td>
+<td>리포트와 내보내기 파일에 모델별 토큰·비용 기록</td>
+<td>P1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="f6-저장과-내보내기-p0">F6. 저장과 내보내기 (P0)</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>요구사항</th>
+<th>우선순위</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F6-1</td>
+<td><strong>PDF</strong>: 대화 전문 + 교정 + 리포트. 브라우저 인쇄(인쇄용 CSS) → "PDF로 저장" 방식</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F6-2</td>
+<td><strong>Excel(xlsx)</strong>: 시트 ① 대화 기록 ② 교정 노트(원문·고친 문장·오류 유형·설명) ③ 표현 목록 ④ 오류 통계 ⑤ 비용</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F6-3</td>
+<td><strong>Word(docx)</strong>: 리포트 형식(제목, 표, 교정 강조)</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F6-4</td>
+<td>파일 이름 규칙: <code>talkmate_es_restaurant_2026-10-16_1530.xlsx</code> (브라우저 호환을 위해 영문)</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F6-5</td>
+<td>대화 종료·탭 닫기 전 "저장하지 않은 대화가 있습니다" 안내</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F6-6</td>
+<td><strong>Excel 불러오기</strong>: 예전에 내보낸 교정 노트를 불러와 자주 틀리는 유형을 다음 연습 프롬프트에 반영</td>
+<td>P2</td>
+</tr>
+<tr>
+<td>F6-7</td>
+<td>표현 목록을 Anki 호환 CSV로 내보내기</td>
+<td>P2</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-ai-연동-설계">6. AI 연동 설계</h2>
+<h3 id="6-1-openrouter-기본-사항">6.1 OpenRouter 기본 사항</h3>
+<ul>
+<li>엔드포인트: <code>POST https://openrouter.ai/api/v1/chat/completions</code> (OpenAI 호환 형식), <code>stream: true</code> 지원</li>
+<li>인증: <code>Authorization: Bearer &lt;사용자가 입력한 키&gt;</code></li>
+<li>권장 헤더: <code>HTTP-Referer</code>(앱 주소), <code>X-Title</code>(TalkMate)</li>
+<li>브라우저에서 직접 호출(서버 프록시 없음)</li>
+</ul>
+<h3 id="6-2-모델과-역할-분담-기본값-제안-설정에서-변경-가능">6.2 모델과 역할 분담 (기본값 제안, 설정에서 변경 가능)</h3>
+<table>
+<thead>
+<tr>
+<th>역할</th>
+<th>기본 모델</th>
+<th>OpenRouter ID(조사 기준, 개발 시 확인)</th>
+<th>단가(입력/출력, 100만 토큰당)</th>
+<th>선택 이유</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>대화 상대(롤플레이)</td>
+<td>Gemini 3.8 Flash</td>
+<td><code>google/gemini-3.8-flash</code></td>
+<td>$0.75 / $3.75 (프로모션가, 2027-01-01부터 $1.50 / $7.50 예정)</td>
+<td>빠른 응답, 다국어 자연스러움</td>
+</tr>
+<tr>
+<td>문장별 교정·힌트</td>
+<td>GPT-6 Luna</td>
+<td><code>openai/gpt-6-luna</code></td>
+<td>$0.10 / $0.50</td>
+<td>매 턴 호출되므로 저렴하고 빠른 모델, JSON 출력</td>
+</tr>
+<tr>
+<td>대화 후 리포트</td>
+<td>Claude Sonnet 5.5</td>
+<td><code>anthropic/claude-sonnet-5.5</code></td>
+<td>$2 / $10</td>
+<td>한 번만 호출, 설명 품질이 중요</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>"고품질 모드": 교정도 Claude Sonnet 5.5로 수행(비용 증가).</li>
+<li>"절약 모드": 세 역할 모두 GPT-6 Luna.</li>
+</ul>
+<h3 id="6-3-예상-비용-15턴-대화-1회-기준-대략">6.3 예상 비용 (15턴 대화 1회 기준, 대략)</h3>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>호출 수</th>
+<th>토큰(대략)</th>
+<th>비용(대략)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>대화 상대</td>
+<td>15회</td>
+<td>입력 누적 약 30,000 / 출력 약 1,500</td>
+<td>약 $0.03</td>
+</tr>
+<tr>
+<td>교정</td>
+<td>15회</td>
+<td>입력 약 15,000 / 출력 약 4,500</td>
+<td>약 $0.004</td>
+</tr>
+<tr>
+<td>리포트</td>
+<td>1회</td>
+<td>입력 약 5,000 / 출력 약 1,500</td>
+<td>약 $0.025</td>
+</tr>
+<tr>
+<td><strong>합계</strong></td>
+<td></td>
+<td></td>
+<td><strong>약 $0.06 (약 80원)</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>단가와 환율은 바뀔 수 있으므로 앱은 설정값으로 계산하고, 실제 비용은 응답의 usage 정보로 기록합니다.</p>
+</blockquote>
+<h3 id="6-4-프롬프트-원칙">6.4 프롬프트 원칙</h3>
+<ul>
+<li><strong>대화 상대</strong>: 상황, 역할, 수준(CEFR)별 어휘·문장 길이, 한 번에 1~3문장, 질문으로 끝내 대화를 이어 감, 사용자의 오류는 자연스럽게 바꿔 말하기만, 미션 유도.</li>
+<li><strong>교정</strong>: 반드시 JSON 스키마로 응답. 오류가 없으면 <code>"errors": []</code>. 설명은 한국어. 수준보다 지나치게 어려운 대안 표현은 제안하지 않음.</li>
+<li><strong>리포트</strong>: 대화 전문과 교정 결과를 입력으로 받아 JSON 생성 → 앱이 화면과 파일로 변환.</li>
+<li>대화 기록이 길어지면 앞부분을 요약해 입력 토큰을 줄임(P1).</li>
+</ul>
+<h3 id="6-5-교정-json-예시">6.5 교정 JSON 예시</h3>
+<pre><code class="language-json">{
+  &quot;original&quot;: &quot;Yo quiero un mesa para dos.&quot;,
+  &quot;corrected&quot;: &quot;Quiero una mesa para dos.&quot;,
+  &quot;errors&quot;: [
+    {&quot;span&quot;: &quot;un mesa&quot;, &quot;fix&quot;: &quot;una mesa&quot;, &quot;type&quot;: &quot;성·수 일치&quot;, &quot;explain_ko&quot;: &quot;mesa는 여성 명사이므로 una를 씁니다.&quot;}
+  ],
+  &quot;natural&quot;: [&quot;¿Tienen una mesa para dos?&quot;],
+  &quot;note_ko&quot;: &quot;주어 yo는 생략하는 것이 더 자연스럽습니다.&quot;
+}
+</code></pre>
+<h3 id="6-6-안정성">6.6 안정성</h3>
+<ul>
+<li>요청 실패 시 1회 자동 재시도, 이후 오류 메시지와 "다시 시도" 버튼</li>
+<li>교정 JSON 파싱 실패 시 원문만 표시하고 대화는 계속 진행</li>
+<li>대화 상대와 교정을 병렬로 호출해 기다리는 시간을 줄임</li>
+</ul>
+<hr />
+<h2 id="7-음성-기능">7. 음성 기능</h2>
+<table>
+<thead>
+<tr>
+<th>기능</th>
+<th>기술</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>음성 인식(STT)</td>
+<td>Web Speech API <code>SpeechRecognition</code> (<code>lang</code>: en-US, ja-JP, es-ES)</td>
+<td>주 사용 환경인 PC Edge와 갤럭시 삼성 인터넷에서 동작. 파이어폭스는 기본 미지원 → 텍스트 입력으로 대체</td>
+</tr>
+<tr>
+<td>음성 합성(TTS)</td>
+<td><code>speechSynthesis</code></td>
+<td>대부분의 브라우저 지원. 언어별 음성 목록에서 선택</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>개인정보 안내</strong>: Edge·크롬·삼성 인터넷의 음성 인식은 음성을 브라우저 회사(마이크로소프트·구글) 서버로 보내 처리할 수 있습니다. 앱 첫 화면에 안내합니다.</li>
+<li><strong>음성 선택</strong>: Edge의 "Natural" 온라인 음성을 우선 선택하고, 설정에서 언어별 목소리와 속도를 바꿀 수 있습니다.</li>
+<li>음성 인식 결과는 바로 보내지 않고 입력창에 넣어 수정할 수 있게 합니다.</li>
+<li>(P2) 브라우저 음성 인식 대신 OpenRouter 음성 전사 엔드포인트 사용 옵션(추가 비용 발생).</li>
+</ul>
+<hr />
+<h2 id="8-데이터와-보안">8. 데이터와 보안</h2>
+<h3 id="8-1-api-키-보관-방식-확정">8.1 API 키 보관 방식 (확정)</h3>
+<p>요청하신 "localStorage에 저장 + 세션이 끝나면 사라짐"은 브라우저 저장소의 특성상 다음과 같이 구분됩니다.</p>
+<table>
+<thead>
+<tr>
+<th>방식</th>
+<th>동작</th>
+<th>장단점</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>sessionStorage (권장)</strong></td>
+<td>탭을 닫으면 자동 삭제. 새로고침해도 유지</td>
+<td>"세션이 끝나면 사라짐"을 브라우저가 보장. 탭마다 따로 입력</td>
+</tr>
+<tr>
+<td>localStorage + 종료 시 삭제 코드</td>
+<td>페이지를 떠날 때 코드로 삭제</td>
+<td>브라우저 강제 종료·충돌 시 삭제 코드가 실행되지 않아 키가 남을 수 있음. 새로고침해도 지워짐</td>
+</tr>
+<tr>
+<td>localStorage (지우기 전까지 유지)</td>
+<td>직접 지울 때까지 보관</td>
+<td>매번 입력할 필요 없음. 공용 PC에서는 위험</td>
+</tr>
+</tbody>
+</table>
+<p>→ <strong>sessionStorage를 기본값</strong>으로 하고, 키 입력 화면과 설정에서 <strong>"이 기기에 저장(localStorage)"</strong> 옵션을 제공합니다. 옵션을 끄면 localStorage의 키를 즉시 지웁니다.</p>
+<h3 id="8-2-데이터-보관">8.2 데이터 보관</h3>
+<table>
+<thead>
+<tr>
+<th>데이터</th>
+<th>위치</th>
+<th>수명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API 키</td>
+<td>sessionStorage(기본) 또는 localStorage(선택)</td>
+<td>탭 닫으면 삭제 / 직접 지울 때까지</td>
+</tr>
+<tr>
+<td>진행 중인 대화·교정</td>
+<td>메모리 + sessionStorage(새로고침 대비)</td>
+<td>탭 닫으면 삭제</td>
+</tr>
+<tr>
+<td>설정(언어·수준·말투·상황·모델 슬러그·단가·음성)</td>
+<td>localStorage (키 제외)</td>
+<td>설정 초기화할 때까지 유지</td>
+</tr>
+<tr>
+<td>대화 기록·리포트</td>
+<td>사용자가 내보낸 파일(PDF·Word·Excel)</td>
+<td>사용자의 PC</td>
+</tr>
+</tbody>
+</table>
+<h3 id="8-3-보안-원칙">8.3 보안 원칙</h3>
+<ul>
+<li>API 키는 OpenRouter 외 어디로도 보내지 않으며, 내보내기 파일에 포함하지 않음.</li>
+<li>AI 출력은 HTML로 해석하지 않고 텍스트로만 표시.</li>
+<li>외부 스크립트는 버전을 고정한 CDN에서만 로드.</li>
+<li>OpenRouter 대시보드에서 키별 사용 한도(크레딧 한도) 설정을 권장.</li>
+</ul>
+<hr />
+<h2 id="9-기술-스택">9. 기술 스택</h2>
+<table>
+<thead>
+<tr>
+<th>영역</th>
+<th>선택</th>
+<th>이유</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>형태</td>
+<td><code>index.html</code> + <code>style.css</code> + <code>app.js</code> (순수 JS)</td>
+<td>빌드 없이 GitHub Pages 배포</td>
+</tr>
+<tr>
+<td>AI</td>
+<td>OpenRouter Chat Completions (fetch, 스트리밍)</td>
+<td>키 하나로 3개 모델</td>
+</tr>
+<tr>
+<td>음성</td>
+<td>Web Speech API (SpeechRecognition, speechSynthesis)</td>
+<td>무료, 설치 불필요</td>
+</tr>
+<tr>
+<td>Excel</td>
+<td>SheetJS(xlsx)</td>
+<td>브라우저에서 xlsx 생성·읽기</td>
+</tr>
+<tr>
+<td>Word</td>
+<td>docx(docx.js)</td>
+<td>브라우저에서 docx 생성</td>
+</tr>
+<tr>
+<td>PDF</td>
+<td>인쇄용 CSS + <code>window.print()</code></td>
+<td>한글·일본어·스페인어 글꼴 문제 없음(jsPDF는 한글 TTF 임베드가 필요해 용량이 커짐)</td>
+</tr>
+<tr>
+<td>차트</td>
+<td>CSS 막대그래프 (오류 통계)</td>
+<td>라이브러리 없이 가볍고 PDF 인쇄에도 표시</td>
+</tr>
+<tr>
+<td>안전 표시</td>
+<td><code>textContent</code>로만 렌더링</td>
+<td>AI 출력을 HTML로 해석하지 않으므로 별도 정화 라이브러리 불필요</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-화면-구성">10. 화면 구성</h2>
+<ol>
+<li><strong>시작 화면</strong>: API 키 입력, 연결 테스트, 개인정보·비용 안내</li>
+<li><strong>연습 설정 화면</strong>: 언어·수준·상황 카드, 교정 방식, 모델 프리셋(기본/고품질/절약), 예상 비용</li>
+<li><strong>회화 화면</strong> (데스크톱 2단, 모바일 1단)</li>
+<li>왼쪽: 채팅(AI 발화 + 듣기·번역 버튼, 내 발화 + 교정 배지)</li>
+<li>오른쪽: 미션 체크리스트, 교정 상세 패널, 누적 비용</li>
+<li>아래: 입력창, 마이크 버튼, 힌트 버튼, 대화 종료</li>
+<li><strong>리포트 화면</strong>: 요약 카드, 오류 유형 차트, 표현 목록, 저장 버튼(PDF·Word·Excel)</li>
+</ol>
+<hr />
+<h2 id="11-비기능-요구사항">11. 비기능 요구사항</h2>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>응답 속도</td>
+<td>AI 첫 글자 표시 2초 이내 목표(스트리밍), 교정은 대화 응답과 병렬 처리</td>
+</tr>
+<tr>
+<td>브라우저</td>
+<td>PC Microsoft Edge, 갤럭시 삼성 인터넷 우선(크롬 포함). 기타 브라우저는 텍스트 입력으로 사용</td>
+</tr>
+<tr>
+<td>반응형</td>
+<td>휴대폰 화면(360px)에서도 사용 가능</td>
+</tr>
+<tr>
+<td>접근성</td>
+<td>키보드로 전송(Enter), 마이크 단축키, 충분한 글자 크기</td>
+</tr>
+<tr>
+<td>언어</td>
+<td>화면 문구는 한국어</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="12-개발-단계-마일스톤">12. 개발 단계 (마일스톤)</h2>
+<table>
+<thead>
+<tr>
+<th>단계</th>
+<th>내용</th>
+<th>결과물</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1</td>
+<td>키 입력(sessionStorage), 연습 설정, 텍스트 회화(대화 상대 모델 1개)</td>
+<td>텍스트로 대화 가능한 최소 버전</td>
+</tr>
+<tr>
+<td>M2</td>
+<td>문장별 교정(JSON), 힌트, 번역, 비용 표시</td>
+<td>학습 기능 완성</td>
+</tr>
+<tr>
+<td>M3</td>
+<td>음성 인식·합성, 미션 체크리스트</td>
+<td>말하기 연습 가능</td>
+</tr>
+<tr>
+<td>M4</td>
+<td>리포트, PDF·Excel 내보내기</td>
+<td>MVP 완료</td>
+</tr>
+<tr>
+<td>M5</td>
+<td>Word 내보내기, 스트리밍, 사용자 정의 상황, 여행 대비 모드</td>
+<td>2차 기능</td>
+</tr>
+<tr>
+<td>M6</td>
+<td>Excel 불러오기로 약점 반영, Anki CSV</td>
+<td>다듬기</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="13-위험-요소와-대응">13. 위험 요소와 대응</h2>
+<table>
+<thead>
+<tr>
+<th>위험</th>
+<th>영향</th>
+<th>대응</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>브라우저에서 API 키 노출(악성 확장 프로그램 등)</td>
+<td>키 도용</td>
+<td>sessionStorage, 키 지우기 버튼, OpenRouter 키 사용 한도 설정 안내</td>
+</tr>
+<tr>
+<td>AI 교정 오류(틀린 교정)</td>
+<td>잘못된 학습</td>
+<td>설명 함께 표시, "이의 있음"으로 재검토(P2), 리포트에 "AI 교정은 참고용" 문구</td>
+</tr>
+<tr>
+<td>음성 인식 오류(특히 외국어 발음)</td>
+<td>내가 말하지 않은 문장으로 교정</td>
+<td>전송 전 수정 가능, 텍스트 입력 병행</td>
+</tr>
+<tr>
+<td>탭을 닫아 대화 유실</td>
+<td>기록 손실</td>
+<td>종료 전 저장 안내, 새로고침 대비 sessionStorage 임시 저장</td>
+</tr>
+<tr>
+<td>모델 슬러그·단가 변경</td>
+<td>호출 실패, 비용 계산 오차</td>
+<td>설정값으로 관리, 연결 테스트에서 확인</td>
+</tr>
+<tr>
+<td>대화가 길어져 비용 증가</td>
+<td>예상보다 큰 지출</td>
+<td>누적 비용 실시간 표시, 오래된 대화 요약(P1)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="14-결정된-사항과-확인할-사항">14. 결정된 사항과 확인할 사항</h2>
+<h3 id="14-1-결정된-사항-v0-2">14.1 결정된 사항 (v0.2)</h3>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>앱 이름</td>
+<td>토크메이트(TalkMate)</td>
+</tr>
+<tr>
+<td>로그인·DB</td>
+<td>사용하지 않음</td>
+</tr>
+<tr>
+<td>AI</td>
+<td>OpenRouter: Gemini 3.8 Flash(대화), GPT-6 Luna(교정·힌트·번역), Claude Sonnet 5.5(리포트). 고품질·절약 프리셋 제공</td>
+</tr>
+<tr>
+<td>API 키</td>
+<td>하드 코딩 금지, 브라우저에서 입력. 기본 sessionStorage(탭 닫으면 삭제), 선택 시 localStorage 저장</td>
+</tr>
+<tr>
+<td>언어·수준</td>
+<td>영어 A2+ 초중급, 일본어 B1 중급(N3), 스페인어 A1 입문·초급</td>
+</tr>
+<tr>
+<td>음성</td>
+<td>첫 버전부터 음성 입력 포함. PC Edge, 갤럭시 삼성 인터넷 기준</td>
+</tr>
+<tr>
+<td>교정</td>
+<td>대화 중 문장마다 즉시 교정</td>
+</tr>
+<tr>
+<td>설정</td>
+<td>localStorage에 기억(키 제외)</td>
+</tr>
+<tr>
+<td>저장</td>
+<td>서버 저장 없음, PDF·Word·Excel 파일로 로컬 PC에 저장</td>
+</tr>
+<tr>
+<td>배포</td>
+<td>사용자가 별도 GitHub 저장소를 만들어 직접 올림(GitHub Pages 권장)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="14-2-남은-확인-사항">14.2 남은 확인 사항</h3>
+<ol>
+<li>실제 OpenRouter 키로 세 모델의 응답 품질·속도 확인(특히 교정 JSON 형식 준수 여부)</li>
+<li>갤럭시 삼성 인터넷에서 일본어·스페인어 음성 인식과 음성 읽기 품질 확인</li>
+</ol>
+<hr />
+<h2 id="참고-자료">참고 자료</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.issen.com/blog/best-ai-language-tutors-conversation-practice">Best AI Language Tutors for Real Conversation Practice (Issen, 2026-05)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.issen.com/blog/best-ai-apps-practicing-language-real-conversations">Top AI Apps for Practicing a Language Through Real Conversations (Issen, 2026-05)</a></li>
+<li><a target="_blank" rel="noopener" href="https://devtoollab.com/ai-tools/praktika-ai">Praktika AI 소개</a></li>
+<li><a target="_blank" rel="noopener" href="https://openrouter.ai/compare/anthropic/claude-sonnet-5.5/openai/gpt-6-luna">OpenRouter: Claude Sonnet 5.5 vs GPT-6 Luna</a></li>
+<li><a target="_blank" rel="noopener" href="https://openrouter.ai/compare/anthropic/claude-sonnet-5.5/google/gemini-3.8-flash">OpenRouter: Claude Sonnet 5.5 vs Gemini 3.8 Flash</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.teamday.ai/blog/top-ai-models-openrouter-2026">OpenRouter Top Models (2026-10)</a></li>
+<li><a target="_blank" rel="noopener" href="https://openrouter.ai/blog/tutorials/transcription-on-openrouter/">Transcription on OpenRouter</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.testmuai.com/learning-hub/speech-recognition-api-browser-support/">Speech Recognition API Browser Support</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.assemblyai.com/blog/speech-recognition-javascript-web-speech-api">Speech recognition in JavaScript with the Web Speech API (AssemblyAI)</a></li>
+<li><a target="_blank" rel="noopener" href="https://core-cms.cambridgecore.org/core/services/aop-cambridge-core/content/view/CDE67D4A4E286921DA4BE9C40BAD9FE6/S0272263106060141a.pdf/implicit-and-explicit-corrective-feedback-and-the-acquisition-of-l2-grammar.pdf">Ellis, Loewen &amp; Erlam (2006), Implicit and explicit corrective feedback and the acquisition of L2 grammar</a></li>
+<li><a target="_blank" rel="noopener" href="https://jst-ud.vn/jst-ud/article/download/7484/5339/6408">Recast vs explicit corrective feedback in dyadic conversation (JST-UD)</a></li>
+</ul></article></main>
+<button id="top" aria-label="맨 위로">↑</button>
+<script>
+(function(){
+ var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+ // 그룹 접기/펼치기
+ $$('.grp-h:not(.static)').forEach(function(b){b.addEventListener('click',function(e){
+  if(e.target.closest('a')){return}
+  var g=b.parentNode;g.classList.toggle('open');b.setAttribute('aria-expanded',g.classList.contains('open'))})});
+ // 모바일 메뉴
+ function close(){document.body.classList.remove('open')}
+ $('#menu').onclick=function(){document.body.classList.toggle('open')};
+ $('#scrim').onclick=close;
+ $$('#nav a').forEach(function(a){a.addEventListener('click',close)});
+ // 검색
+ $('#q').addEventListener('input',function(){
+  var v=this.value.trim().toLowerCase();
+  $$('#nav .grp').forEach(function(g){
+   var any=false,gh=$('.grp-h',g),gm=!!v&&gh.textContent.toLowerCase().indexOf(v)>-1;if(gm)any=true;
+   $$('li',g).forEach(function(li){var ok=!v||gm||li.textContent.toLowerCase().indexOf(v)>-1;li.classList.toggle('hide',!ok);if(ok)any=true});
+   g.style.display=(!v||any)?'':'none';
+   if(v&&any)g.classList.add('open');
+  });
+ });
+ // 스크롤 위치 표시
+ var links=$$('#nav li a'),map={};
+ links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a});
+ var heads=$$('#doc h2[id],#doc h3[id]');
+ $$('#nav .grp-h a').forEach(function(a){map[a.getAttribute('href').slice(1)]=a});
+ links=$$('#nav a');
+ function spy(){
+  var y=window.scrollY+80,cur=null;
+  heads.forEach(function(h){if(h.offsetTop<=y)cur=h});
+  links.forEach(function(a){a.classList.remove('active')});
+  if(cur&&map[cur.id]){var a=map[cur.id];a.classList.add('active');
+   var g=a.closest('.grp');if(g&&!g.classList.contains('open')&&!$('#q').value)g.classList.add('open');
+   var nav=$('#nav'),r=a.getBoundingClientRect(),nr=nav.getBoundingClientRect();
+   if(r.top<nr.top||r.bottom>nr.bottom)nav.scrollTop+=r.top-nr.top-nr.height/3}
+  $('#top').classList.toggle('show',window.scrollY>600);
+ }
+ var t;window.addEventListener('scroll',function(){cancelAnimationFrame(t);t=requestAnimationFrame(spy)});spy();
+ $('#top').onclick=function(){window.scrollTo({top:0})};
+ // 테마
+ var root=document.documentElement;
+ try{var s=localStorage.getItem('theme');if(s)root.dataset.theme=s}catch(e){}
+ $('#theme').onclick=function(){
+  var dark=root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;
+  root.dataset.theme=dark?'light':'dark';try{localStorage.setItem('theme',root.dataset.theme)}catch(e){}};
+})();
+</script>
+</body>
+</html>
