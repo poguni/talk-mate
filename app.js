@@ -546,6 +546,7 @@ function setMicUI(on) {
   b.replaceChildren(icon(on ? 'stop' : 'mic', 'xl'));
   b.setAttribute('aria-label', on ? '음성 입력 멈추기' : '음성 입력');
   $('#input').classList.toggle('listening', on);
+  $('#composerBar').classList.toggle('listening', on);
   $('#micWave').classList.toggle('hidden', !on);
   $('.mic-hint').classList.toggle('live', on);
 }
@@ -1110,7 +1111,7 @@ function openChat() {
   $('#chatTitle').textContent = `${session.scenario.title}${session.city ? ' · ' + session.city : ''}`;
   $('#hints').classList.add('hidden');
   $('#turnNotice').classList.add('hidden');
-  $('#input').placeholder = `${L.name}로 말하거나 입력하세요 · Enter 보내기`;
+  $('#input').placeholder = window.matchMedia('(pointer: fine)').matches ? `${L.name}로 말하거나 입력하세요 · Enter 보내기` : `${L.name}로 말하거나 입력하세요`;
   const canMic = !!SR || settings.sttMode === 'ai';
   $('#micBtn').disabled = !canMic;
   setMicUI(false);
@@ -1302,7 +1303,7 @@ function retryPartner(m) { partnerTurn(m); }
 
 function updateSendState() {
   $('#sendBtn').disabled = partnerBusy;
-  $('#sendBtn').textContent = partnerBusy ? 'AI 응답 중…' : '보내기';
+  $('#sendBtn .lbl').textContent = partnerBusy ? '응답 중…' : '보내기';
 }
 function sendUser() {
   if (!session || partnerBusy) return;
@@ -1892,7 +1893,7 @@ function initSettings() {
 function autoResize() {
   const t = $('#input');
   t.style.height = 'auto';
-  t.style.height = Math.min(160, t.scrollHeight + 2) + 'px';
+  t.style.height = Math.min(160, t.scrollHeight) + 'px'; // 입력 바 안쪽이라 테두리 없음
 }
 
 /* ───────────── 시작 ───────────── */

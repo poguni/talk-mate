@@ -16,6 +16,7 @@ OpenRouter API 키 하나로 **Gemini 3.8 Flash**(대화 상대), **GPT-6 Luna**
 | `app.js` | 모든 기능(OpenRouter 호출, 음성 인식·합성, 교정, 리포트, 내보내기) |
 | `DESIGN.md` | 디자인 가이드(콘셉트, 토큰, 컴포넌트, 화면 명세) |
 | `design-mockup.html` | 디자인 시안. 브라우저로 열어 7개 화면과 밝은·어두운 테마를 확인 |
+| `Development_Report_v1.md` · `.html` | 개발 보고서(과정, 구조, 테스트, 개선 로드맵). HTML은 왼쪽 목차로 이동 |
 
 빌드 과정이 없습니다. `index.html`, `style.css`, `app.js` 세 파일을 같은 폴더에 두면 됩니다. 화면 디자인은 `DESIGN.md`(Café Notebook)를 따릅니다.
 
