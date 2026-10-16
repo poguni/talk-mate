@@ -123,6 +123,9 @@ const DEFAULT_SETTINGS = {
   autoSend: false,
   rate: 0.95,
   voices: { en: '', ja: '', es: '' },
+  sttLang: { en: 'en-US', ja: 'ja-JP', es: 'es-ES' },   // 음성 인식 지역(억양)
+  sttMode: 'browser',                                  // 'browser'(무료) | 'ai'(AI 받아쓰기)
+  sttModel: MODELS.flash,                              // AI 받아쓰기 모델(오디오 입력 지원 모델)
   turns: 12,
 };
 
@@ -130,6 +133,7 @@ const DEFAULT_SETTINGS = {
 let settings = loadSettings();
 let session = loadSession();
 let partnerBusy = false;
+let lastSentText = ''; // 마지막으로 보낸 문장(입력창 정리용)
 let modelCatalog = null; // OpenRouter 모델 목록 캐시
 
 /* ───────────── 유틸 ───────────── */
@@ -340,7 +344,8 @@ function roughTokens(str) { return Math.ceil((str || '').length / 3); }
 function recordCost(role, model, usage, messages, text) {
   if (!session) return;
   const p = priceOf(model);
-  const inT = usage && usage.prompt_tokens != null ? usage.prompt_tokens : roughTokens(messages.map((m) => m.content).join(' '));
+  const inT = usage && usage.prompt_tokens != null ? usage.prompt_tokens
+    : roughTokens(messages.map((m) => (typeof m.content === 'string' ? m.content : '')).join(' '));
   const outT = usage && usage.completion_tokens != null ? usage.completion_tokens : roughTokens(text);
   let cost = usage && typeof usage.cost === 'number' ? usage.cost : null;
   const estimated = cost == null;
@@ -544,12 +549,17 @@ function setMicUI(on) {
   $('#micWave').classList.toggle('hidden', !on);
   $('.mic-hint').classList.toggle('live', on);
 }
-function stopMic() {
+/** 마이크를 멈춥니다. discard=true(문장을 보낼 때)면 늦게 도착하는 인식 결과를 버립니다. */
+function stopMic(discard) {
   if (listening && micDiag) micDiag.manual = true;
-  if (listening) setMicUI(false);
+  if (listening || recorder) setMicUI(false);
   listening = false;
   clearTimeout(autoStopTimer);
-  if (rec) { try { rec.stop(); } catch { /* 무시 */ } }
+  if (rec) {
+    if (discard) { rec.discard = true; recGotResult = false; }
+    try { discard ? rec.abort() : rec.stop(); } catch { /* 무시 */ }
+  }
+  if (recorder) stopRecording(discard);
 }
 const SR_ERRORS = {
   'not-allowed': '마이크 권한이 거부되었습니다. 주소창 왼쪽 자물쇠(사이트 정보) 아이콘에서 마이크를 "허용"으로 바꾼 뒤 새로고침해 주세요.',
@@ -560,9 +570,12 @@ const SR_ERRORS = {
   'bad-grammar': '음성 인식 설정 오류가 발생했습니다.',
 };
 function toggleMic() {
-  if (!SR) { toast('이 브라우저는 음성 인식을 지원하지 않습니다. Edge·삼성 인터넷·크롬을 사용하거나 입력창에 타자로 입력해 주세요.', true); return; }
+  if (recorder) { stopMic(); return; }
+  if (transcribing) return;
+  if (!SR && settings.sttMode !== 'ai') { toast('이 브라우저는 음성 인식을 지원하지 않습니다. 설정에서 "AI 받아쓰기"를 켜거나 입력창에 타자로 입력해 주세요.', true); return; }
   if (listening) { stopMic(); return; }
   if ('speechSynthesis' in window) speechSynthesis.cancel();
+  if (settings.sttMode === 'ai') { startRecording(); return; }
   listening = true;
   recGotResult = false;
   micDiag = { audio: false, sound: false, speech: false, restarts: 0, startedAt: Date.now() };
@@ -577,7 +590,7 @@ function startRecognition() {
   const r = new SR();
   let roundResult = false;
   rec = r;
-  r.lang = LANGS[session.lang].stt;
+  r.lang = (settings.sttLang && settings.sttLang[session.lang]) || LANGS[session.lang].stt;
   r.interimResults = true;
   r.continuous = !IS_ANDROID;
   r.maxAlternatives = 1;
@@ -588,6 +601,7 @@ function startRecognition() {
   r.onsoundstart = () => { micDiag.sound = true; };
   r.onspeechstart = () => { micDiag.speech = true; setMicStatus('듣고 있어요… 다 말하면 다시 누르세요'); };
   r.onresult = (e) => {
+    if (r.discard) return; // 이미 보낸 문장의 늦은 결과는 무시
     let finalText = '';
     let interim = '';
     for (let i = 0; i < e.results.length; i++) {
@@ -611,6 +625,7 @@ function startRecognition() {
   };
   r.onend = () => {
     if (rec === r) rec = null;
+    if (r.discard) { setMicUI(false); return; } // 보내기로 끝낸 경우: 안내 없이 종료
     const elapsed = Date.now() - micDiag.startedAt;
     // 사용자가 아직 멈추지 않았으면 다시 듣습니다(무음으로 끊긴 경우, 또는 연속 듣기가 서버에서 끊긴 경우).
     const silentEnd = r.lastError === 'no-speech' || (!r.lastError && !(IS_ANDROID && roundResult));
@@ -649,6 +664,110 @@ function finishListening(err) {
   else if (!micDiag.speech) msg = '소리는 들어오지만 말소리로 인식되지 않았습니다. 마이크 입력 볼륨을 높이거나 조금 더 가까이에서 또렷하게 말해 보세요.';
   else msg = '말소리는 들렸지만 글자로 바꾸지 못했습니다. 연습 언어와 같은 언어로, 조금 천천히 말해 보세요.';
   toast(msg, true);
+}
+
+/* ───────────── AI 받아쓰기 (녹음 → OpenRouter 오디오 입력 모델) ─────────────
+ * 브라우저 음성 인식이 외국어 억양을 잘 못 알아들을 때 쓰는 선택 기능입니다.
+ * 녹음한 소리를 16kHz WAV로 바꿔 오디오 입력을 지원하는 모델에 보내고, 들은 그대로 받아쓰게 합니다.
+ */
+let recorder = null;
+let recChunks = [];
+let recStream = null;
+let recTimer = null;
+let transcribing = false;
+const MAX_RECORD_MS = 30000;
+async function startRecording() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
+    toast('이 브라우저는 녹음을 지원하지 않습니다. 설정에서 음성 인식 방식을 "브라우저"로 바꿔 주세요.', true);
+    return;
+  }
+  try {
+    recStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, channelCount: 1 } });
+  } catch (e) {
+    toast(e.name === 'NotAllowedError' ? SR_ERRORS['not-allowed'] : SR_ERRORS['audio-capture'], true);
+    return;
+  }
+  recChunks = [];
+  recorder = new MediaRecorder(recStream);
+  recorder.ondataavailable = (e) => { if (e.data && e.data.size) recChunks.push(e.data); };
+  recorder.start();
+  setMicUI(true);
+  setMicStatus('녹음 중… 다 말하면 마이크를 다시 누르세요 (최대 30초)');
+  recTimer = setTimeout(() => { if (recorder) stopMic(); }, MAX_RECORD_MS);
+}
+function stopRecording(discard) {
+  const r = recorder;
+  recorder = null;
+  clearTimeout(recTimer);
+  setMicUI(false);
+  r.onstop = () => {
+    if (recStream) { recStream.getTracks().forEach((t) => t.stop()); recStream = null; }
+    if (discard) { setMicStatus('마이크를 눌러 말해 보세요.'); return; }
+    const blob = new Blob(recChunks, { type: r.mimeType || 'audio/webm' });
+    transcribeBlob(blob).catch((e) => { toast('AI 받아쓰기 실패: ' + friendlyError(e), true); });
+  };
+  try { r.stop(); } catch { /* 무시 */ }
+}
+/** 녹음 파일을 16kHz 모노 WAV(base64)로 바꿉니다. */
+async function blobToWavBase64(blob) {
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  const ctx = new Ctx();
+  const audio = await ctx.decodeAudioData(await blob.arrayBuffer());
+  ctx.close();
+  const rate = 16000;
+  const length = Math.max(1, Math.round(audio.duration * rate));
+  const off = new OfflineAudioContext(1, length, rate);
+  const src = off.createBufferSource();
+  src.buffer = audio;
+  src.connect(off.destination);
+  src.start();
+  const pcm = (await off.startRendering()).getChannelData(0);
+  const buf = new ArrayBuffer(44 + pcm.length * 2);
+  const v = new DataView(buf);
+  const str = (o, t) => { for (let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
+  str(0, 'RIFF'); v.setUint32(4, 36 + pcm.length * 2, true); str(8, 'WAVE'); str(12, 'fmt ');
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, rate, true);
+  v.setUint32(28, rate * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); str(36, 'data'); v.setUint32(40, pcm.length * 2, true);
+  for (let i = 0; i < pcm.length; i++) { const x = Math.max(-1, Math.min(1, pcm[i])); v.setInt16(44 + i * 2, x < 0 ? x * 0x8000 : x * 0x7fff, true); }
+  const bytes = new Uint8Array(buf);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return { b64: btoa(bin), seconds: audio.duration };
+}
+async function transcribeBlob(blob) {
+  if (!session) return;
+  transcribing = true;
+  $('#micBtn').disabled = true;
+  setMicStatus('AI가 받아쓰는 중…');
+  try {
+    const { b64, seconds } = await blobToWavBase64(blob);
+    if (seconds < 0.4) { toast('녹음이 너무 짧습니다. 마이크를 누른 뒤 말해 보세요.', true); return; }
+    const L = LANGS[session.lang];
+    const lastAi = [...session.messages].reverse().find((m) => m.role === 'ai' && m.text);
+    const prompt = [
+      `Transcribe this recording of a Korean learner speaking ${L.en} (CEFR ${session.level}).`,
+      `Write exactly what the speaker says in ${L.en}, keeping their grammar mistakes and wrong word forms. Do NOT correct, improve, complete, or translate it.`,
+      'Use normal spelling and punctuation. If the speaker uses Korean words, write them in Korean.',
+      lastAi ? `For context only, the speaker is replying to: "${lastAi.text}"` : '',
+      'If there is no intelligible speech, output exactly: [NO_SPEECH]',
+      'Output only the transcript, with no quotes or comments.',
+    ].filter(Boolean).join('\n');
+    const text = (await chat({
+      model: settings.sttModel || MODELS.flash, role: '받아쓰기', maxTokens: 500, temperature: 0,
+      messages: [{ role: 'user', content: [{ type: 'text', text: prompt }, { type: 'input_audio', input_audio: { data: b64, format: 'wav' } }] }],
+    })).trim().replace(/^["“「]|["”」]$/g, '');
+    if (!text || /\[NO_SPEECH\]/i.test(text)) { toast('말소리를 알아듣지 못했습니다. 조금 더 가까이에서 또렷하게 말해 보세요.', true); return; }
+    const input = $('#input');
+    const sep = session.lang === 'ja' ? '' : ' ';
+    input.value = (input.value.trim() ? input.value.trim() + sep : '') + text;
+    autoResize();
+    if (settings.autoSend) sendUser();
+    else { setMicStatus('받아쓴 문장을 확인한 뒤 보내기를 누르세요.'); input.focus(); }
+  } finally {
+    transcribing = false;
+    $('#micBtn').disabled = false;
+    if (!$('#micStatus').textContent.startsWith('받아쓴')) setMicStatus('마이크를 눌러 말해 보세요.');
+  }
 }
 
 /** 설정의 마이크 테스트: 브라우저가 기본 마이크에서 소리를 받는지 5초 동안 확인합니다. */
@@ -736,7 +855,7 @@ async function refreshCatalog() {
   if (!res.ok) throw new Error('models');
   const j = await res.json();
   modelCatalog = j.data || [];
-  const used = new Set([...Object.values(settings.models), ...Object.values(MODELS)]);
+  const used = new Set([...Object.values(settings.models), ...Object.values(MODELS), settings.sttModel]);
   const missing = [];
   for (const id of used) {
     const m = modelCatalog.find((x) => x.id === id);
@@ -748,6 +867,11 @@ async function refreshCatalog() {
   saveSettings();
   fillModelList();
   const inUse = Object.values(settings.models).filter((id) => missing.includes(id));
+  if (settings.sttMode === 'ai') {
+    const sm = modelCatalog.find((x) => x.id === settings.sttModel);
+    const mods = sm && sm.architecture && sm.architecture.input_modalities;
+    if (Array.isArray(mods) && !mods.includes('audio')) return ` ⚠️ 받아쓰기 모델(${settings.sttModel})이 오디오 입력을 지원하지 않습니다. 설정에서 다른 모델을 골라 주세요.`;
+  }
   return inUse.length ? ` ⚠️ 모델 목록에 없는 ID: ${inUse.join(', ')} (설정에서 확인해 주세요)` : ' · 모델 ID와 단가 확인 완료';
 }
 function fillModelList() {
@@ -987,9 +1111,11 @@ function openChat() {
   $('#hints').classList.add('hidden');
   $('#turnNotice').classList.add('hidden');
   $('#input').placeholder = `${L.name}로 말하거나 입력하세요 · Enter 보내기`;
-  $('#micBtn').disabled = !SR;
+  const canMic = !!SR || settings.sttMode === 'ai';
+  $('#micBtn').disabled = !canMic;
   setMicUI(false);
-  setMicStatus(SR ? '마이크를 눌러 말해 보세요.' : '이 브라우저는 음성 인식을 지원하지 않아 타자로 입력합니다.');
+  setMicStatus(!canMic ? '이 브라우저는 음성 인식을 지원하지 않아 타자로 입력합니다.'
+    : settings.sttMode === 'ai' ? '마이크를 눌러 말해 보세요. (AI 받아쓰기)' : '마이크를 눌러 말해 보세요.');
   renderMessages();
   renderMissions();
   renderLiveStats();
@@ -1157,6 +1283,10 @@ async function partnerTurn(existing) {
     m.pending = false;
     updateMessage(m);
     scrollChat();
+    const input = $('#input');
+    if (lastSentText && input.value.trim() === lastSentText) input.value = ''; // 남아 있는 이전 문장 정리
+    autoResize();
+    if (!rec && !recorder && window.matchMedia('(pointer: fine)').matches) input.focus({ preventScroll: true }); // PC에서는 바로 입력
     if (settings.autoSpeak) speak(m.text, session.lang);
   } catch (e) {
     m.pending = false;
@@ -1179,8 +1309,9 @@ function sendUser() {
   const input = $('#input');
   const text = input.value.trim();
   if (!text) { input.focus(); return; }
-  stopMic();
+  stopMic(true);
   input.value = '';
+  lastSentText = text;
   autoResize();
   $('#hints').classList.add('hidden');
   setMicStatus(SR ? '마이크를 눌러 말해 보세요.' : '');
@@ -1652,6 +1783,11 @@ function openSettings() {
   $('#setFx').value = settings.fx;
   $('#setAutoSpeak').checked = settings.autoSpeak;
   $('#setAutoSend').checked = settings.autoSend;
+  $('#setSttMode').value = settings.sttMode;
+  $('#setSttModel').value = settings.sttModel;
+  $('#setSttEs').value = settings.sttLang.es;
+  $('#setSttEn').value = settings.sttLang.en;
+  $('#sttModelRow').classList.toggle('hidden', settings.sttMode !== 'ai');
   $('#setRate').value = settings.rate;
   $('#rateVal').textContent = `${Number(settings.rate).toFixed(2)}배`;
   $('#setTurns').value = settings.turns;
@@ -1662,7 +1798,8 @@ function openSettings() {
 function renderPriceRows() {
   const box = $('#priceRows');
   box.textContent = '';
-  const ids = [...new Set([$('#setPartner').value.trim(), $('#setCoach').value.trim(), $('#setReport').value.trim()].filter(Boolean))];
+  const ids = [...new Set([$('#setPartner').value.trim(), $('#setCoach').value.trim(), $('#setReport').value.trim(),
+    $('#setSttMode').value === 'ai' ? $('#setSttModel').value.trim() : ''].filter(Boolean))];
   for (const id of ids) {
     const pr = settings.prices[id] || { in: '', out: '' };
     box.append(el('div', { class: 'price-row', 'data-model': id }, el('code', null, id),
@@ -1706,6 +1843,9 @@ function saveSettingsDialog() {
   settings.fx = Math.max(1, parseFloat($('#setFx').value) || 1400);
   settings.autoSpeak = $('#setAutoSpeak').checked;
   settings.autoSend = $('#setAutoSend').checked;
+  settings.sttMode = $('#setSttMode').value;
+  settings.sttModel = $('#setSttModel').value.trim() || MODELS.flash;
+  settings.sttLang = { ...settings.sttLang, es: $('#setSttEs').value, en: $('#setSttEn').value };
   settings.rate = Number($('#setRate').value) || 1;
   settings.turns = Math.min(40, Math.max(4, parseInt($('#setTurns').value, 10) || 12));
   for (const sel of document.querySelectorAll('#voiceRows select')) settings.voices[sel.dataset.lang] = sel.value;
@@ -1719,6 +1859,8 @@ function saveSettingsDialog() {
 function initSettings() {
   $('#btnSettings').onclick = openSettings;
   $('#setSave').onclick = saveSettingsDialog;
+  $('#setSttMode').onchange = () => { $('#sttModelRow').classList.toggle('hidden', $('#setSttMode').value !== 'ai'); renderPriceRows(); };
+  $('#setSttModel').addEventListener('change', renderPriceRows);
   $('#micTestBtn').onclick = () => micTest().catch((e) => { $('#micTestResult').textContent = '마이크 테스트 실패: ' + e.message; $('#micTestBtn').disabled = false; });
   $('#setRate').oninput = () => { $('#rateVal').textContent = `${Number($('#setRate').value).toFixed(2)}배`; };
   for (const id of ['#setPartner', '#setCoach', '#setReport']) $(id).addEventListener('change', renderPriceRows);

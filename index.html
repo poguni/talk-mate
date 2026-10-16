@@ -166,12 +166,12 @@
           </div>
           <div id="hints" class="hints hidden" role="dialog" aria-label="힌트"></div>
           <div class="composer">
-            <button id="hintBtn" class="icon-btn hint-btn" type="button" aria-label="힌트 보기" title="힌트"><svg class="i" aria-hidden="true"><use href="#i-bulb"/></svg></button>
             <div class="box">
               <textarea id="input" rows="1" placeholder="말하거나 입력하세요 · Enter 보내기"></textarea>
               <div class="mic-hint"><span id="micWave" class="wave hidden" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span id="micStatus">마이크를 눌러 말해 보세요.</span></div>
             </div>
             <button id="micBtn" class="mic" type="button" aria-label="음성 입력"><svg class="i xl" aria-hidden="true"><use href="#i-mic"/></svg></button>
+            <button id="hintBtn" class="btn hint-btn" type="button" title="지금 할 만한 말을 추천받아요"><svg class="i" aria-hidden="true"><use href="#i-bulb"/></svg>힌트</button>
             <button id="sendBtn" class="btn primary send" type="button">보내기</button>
           </div>
         </div>
@@ -249,6 +249,13 @@
           <label class="toggle-row"><span>AI 말 자동으로 읽기</span><input type="checkbox" class="switch" id="setAutoSpeak"></label>
           <label class="toggle-row"><span>말이 끝나면 바로 보내기<small>끄면 인식된 문장을 확인하고 보냅니다</small></span><input type="checkbox" class="switch" id="setAutoSend"></label>
           <label class="field"><span>읽기 속도 <span class="mono muted" id="rateVal"></span></span><input class="range" type="range" id="setRate" min="0.6" max="1.3" step="0.05"></label>
+          <label class="toggle-row"><span>음성 인식 방식<small>AI 받아쓰기는 외국어 억양을 더 잘 알아듣지만, 한 번 말할 때마다 1원 안팎의 비용이 듭니다</small></span>
+            <select class="input narrow-sel" id="setSttMode"><option value="browser">브라우저 (무료)</option><option value="ai">AI 받아쓰기</option></select></label>
+          <label class="model-row hidden" id="sttModelRow"><span class="role">받아쓰기 모델</span><input class="input mono" type="text" id="setSttModel" list="modelList" spellcheck="false"></label>
+          <label class="toggle-row"><span>스페인어 인식 지역<small>잘 안 되면 다른 지역으로 바꿔 보세요</small></span>
+            <select class="input narrow-sel" id="setSttEs"><option value="es-ES">스페인 (es-ES)</option><option value="es-MX">멕시코 (es-MX)</option><option value="es-US">미국 (es-US)</option></select></label>
+          <label class="toggle-row"><span>영어 인식 지역</span>
+            <select class="input narrow-sel" id="setSttEn"><option value="en-US">미국 (en-US)</option><option value="en-GB">영국 (en-GB)</option></select></label>
           <div id="voiceRows"></div>
           <div class="mic-test">
             <button id="micTestBtn" class="btn sm" type="button"><svg class="i" aria-hidden="true"><use href="#i-mic"/></svg>마이크 테스트</button>

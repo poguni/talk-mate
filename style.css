@@ -265,6 +265,9 @@ svg.i.xl { width: 26px; height: 26px; }
 .composer textarea { width: 100%; resize: none; min-height: 52px; max-height: 160px; padding: 14px 16px; border-radius: 16px; border: 1px solid var(--line-strong); background: var(--surface); font-size: 16px; line-height: 1.5; }
 .composer textarea.listening { border-color: var(--pen); }
 .composer .send { min-height: 60px; }
+.composer .hint-btn { min-height: 60px; padding: 10px 20px; background: var(--ink-soft); border-color: transparent; color: var(--ink); box-shadow: 0 6px 16px rgba(43, 72, 200, .12); }
+.composer .hint-btn:hover { background: var(--ink-soft); filter: brightness(.97); }
+.input.narrow-sel { width: auto; min-width: 150px; min-height: 40px; padding: 6px 10px; font-size: 14px; }
 .mic { width: 60px; height: 60px; border-radius: 50%; border: 0; background: var(--ink); color: var(--on-ink); display: grid; place-items: center; cursor: pointer; box-shadow: 0 6px 16px rgba(43, 72, 200, .3); flex: none; transition: background .15s, box-shadow .15s; }
 .mic.live { background: var(--pen); box-shadow: 0 0 0 8px var(--pen-soft); animation: ring 1.4s ease-in-out infinite; }
 .mic:disabled { opacity: .4; cursor: not-allowed; }
@@ -314,6 +317,8 @@ svg.i.xl { width: 26px; height: 26px; }
   mask: radial-gradient(circle 6px at 50% 100%, transparent 98%, #000) 0 0 / 14px 100% repeat-x;
 }
 .receipt .row { display: flex; justify-content: space-between; gap: 10px; padding: 3px 0; flex-wrap: nowrap; }
+.receipt .row span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.receipt .row span:last-child { flex: none; white-space: nowrap; }
 .receipt .sum { border-top: 1px dashed var(--line-strong); margin-top: 6px; padding-top: 8px; font-weight: 600; color: var(--text); }
 .receipt .ttl { text-align: center; letter-spacing: .2em; color: var(--muted); margin-bottom: 8px; }
 
@@ -426,11 +431,11 @@ input.switch:checked::after { left: 21px; }
   .bubble { font-size: 16px; }
   .note { padding-left: 38px; font-size: 14px; background-image: linear-gradient(to right, transparent 26px, var(--note-margin) 26px, var(--note-margin) 27px, transparent 27px), repeating-linear-gradient(to bottom, transparent 0, transparent 31px, var(--note-line) 31px, var(--note-line) 32px); }
   .note .orig { font-size: 16px; }
-  .composer { display: grid; grid-template-columns: 1fr auto 1fr; grid-template-areas: "box box box" "hint mic send"; align-items: center; gap: 10px; padding: 10px 12px 14px; }
+  .composer { display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "box box box" "mic hint send"; align-items: center; gap: 10px; padding: 10px 12px 14px; }
   .composer .box { grid-area: box; }
-  .composer .hint-btn { grid-area: hint; justify-self: start; }
+  .composer .hint-btn { grid-area: hint; justify-self: center; min-height: 52px; }
   .composer .mic { grid-area: mic; width: 68px; height: 68px; }
-  .composer .send { grid-area: send; justify-self: end; min-height: 44px; }
+  .composer .send { grid-area: send; justify-self: end; min-height: 52px; }
   .composer .mic-hint { justify-content: center; text-align: center; }
   .hints { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; margin: 0; border: 0; border-radius: var(--r-sheet) var(--r-sheet) 0 0; padding: 10px 18px 24px; box-shadow: 0 0 0 100vmax var(--scrim), 0 -12px 40px rgba(30, 20, 5, .25); max-height: 75dvh; overflow-y: auto; }
   .hints::before { content: ""; display: block; width: 40px; height: 5px; border-radius: 3px; background: var(--line-strong); margin: 0 auto 10px; }
