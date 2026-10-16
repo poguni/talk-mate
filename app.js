@@ -597,7 +597,7 @@ function startRecognition() {
   r.maxAlternatives = 1;
   r.onaudiostart = () => {
     micDiag.audio = true;
-    setMicStatus('지금 말씀하세요 · 다 말하면 마이크를 다시 누르세요');
+    setMicStatus(ptt.active ? '지금 말씀하세요 · 다 말하면 스페이스에서 손을 떼세요' : '지금 말씀하세요 · 다 말하면 마이크를 다시 누르세요');
   };
   r.onsoundstart = () => { micDiag.sound = true; };
   r.onspeechstart = () => { micDiag.speech = true; setMicStatus('듣고 있어요… 다 말하면 다시 누르세요'); };
@@ -693,8 +693,9 @@ async function startRecording() {
   recorder.ondataavailable = (e) => { if (e.data && e.data.size) recChunks.push(e.data); };
   recorder.start();
   setMicUI(true);
-  setMicStatus('녹음 중… 다 말하면 마이크를 다시 누르세요 (최대 30초)');
+  setMicStatus(ptt.active ? '녹음 중… 다 말하면 스페이스에서 손을 떼세요' : '녹음 중… 다 말하면 마이크를 다시 누르세요 (최대 30초)');
   recTimer = setTimeout(() => { if (recorder) stopMic(); }, MAX_RECORD_MS);
+  if (ptt.stopWhenReady) { ptt.stopWhenReady = false; stopMic(); } // 녹음 준비 전에 스페이스를 뗀 경우
 }
 function stopRecording(discard) {
   const r = recorder;
@@ -1378,9 +1379,11 @@ async function toggleTranslation(m) {
   updateMessage(m);
   saveSession();
 }
+function hintsOpen() { return !$('#hints').classList.contains('hidden'); }
+function closeHints() { $('#hints').classList.add('hidden'); }
 async function showHints() {
   const box = $('#hints');
-  const close = () => box.classList.add('hidden');
+  const close = closeHints;
   box.classList.remove('hidden');
   box.replaceChildren(
     el('div', { class: 'h-head' }, el('b', null, icon('bulb'), '이렇게 말해 보세요'),
@@ -1897,9 +1900,73 @@ function autoResize() {
 }
 
 /* ───────────── 시작 ───────────── */
+/* ───────────── 키보드 단축키 (PC) ─────────────
+ * 스페이스 길게: 누르고 있는 동안 말하기(손을 떼면 멈춤). 입력창에 글이 있으면 평소처럼 띄어쓰기.
+ * Ctrl+H: 힌트 열기·닫기 / Esc: 힌트 닫기, 듣는 중이면 마이크 멈추기
+ */
+const PTT_HOLD_MS = 350;
+const ptt = { down: false, active: false, timer: null, stopOnUp: false, stopWhenReady: false };
+function chatActive() {
+  return !!session && !$('#view-chat').classList.contains('hidden') && !$('#settingsDlg').open;
+}
+function micOn() { return listening || !!recorder; }
+function isOtherField(t) {
+  if (!t || t.id === 'input') return false;
+  return t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA' || t.isContentEditable;
+}
+function endPtt() {
+  ptt.down = false;
+  clearTimeout(ptt.timer);
+  if (ptt.active) {
+    ptt.active = false;
+    if (micOn()) stopMic();
+    else if (settings.sttMode === 'ai') ptt.stopWhenReady = true; // 녹음이 아직 시작 전
+  } else if (ptt.stopOnUp) {
+    ptt.stopOnUp = false;
+    if (micOn()) stopMic();
+  }
+}
+function initShortcuts() {
+  document.addEventListener('keydown', (e) => {
+    if (!chatActive() || e.isComposing) return;
+    // Ctrl+H: 힌트 열기·닫기 (브라우저의 '방문 기록' 단축키 대신)
+    if (e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey && e.code === 'KeyH') {
+      e.preventDefault();
+      if (hintsOpen()) { closeHints(); $('#input').focus(); } else showHints();
+      return;
+    }
+    if (e.key === 'Escape') {
+      if (hintsOpen()) { e.preventDefault(); closeHints(); $('#input').focus(); }
+      else if (micOn()) { e.preventDefault(); stopMic(); }
+      return;
+    }
+    if (e.code !== 'Space' || e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
+    const t = e.target;
+    if (isOtherField(t)) return;
+    if (t && t.id === 'input' && t.value.trim() !== '') return; // 글이 있으면 띄어쓰기
+    e.preventDefault(); // 화면 스크롤·버튼 눌림 방지
+    if (e.repeat || ptt.down) return;
+    ptt.down = true;
+    if (micOn()) { ptt.stopOnUp = true; return; } // 이미 듣는 중이면 스페이스로 끄기
+    if ($('#micBtn').disabled || transcribing) return;
+    ptt.timer = setTimeout(() => {
+      if (!ptt.down) return;
+      ptt.active = true;
+      toggleMic();
+    }, PTT_HOLD_MS);
+  });
+  document.addEventListener('keyup', (e) => {
+    if (e.code !== 'Space' || !ptt.down) return;
+    e.preventDefault();
+    endPtt();
+  });
+  window.addEventListener('blur', () => { if (ptt.down) endPtt(); });
+}
+
 function init() {
   initKeyView();
   initSettings();
+  initShortcuts();
   $('#startBtn').onclick = startSession;
   $('#resumeBtn').onclick = () => {
     if (!session) return;

@@ -169,12 +169,12 @@
             <div class="inbar" id="composerBar">
               <textarea id="input" rows="1" placeholder="말하거나 입력하세요 · Enter 보내기"></textarea>
               <div class="actions">
-                <button id="micBtn" class="mic" type="button" aria-label="음성 입력"><svg class="i lg" aria-hidden="true"><use href="#i-mic"/></svg></button>
-                <button id="hintBtn" class="act hint-btn" type="button" title="지금 할 만한 말을 추천받아요"><svg class="i" aria-hidden="true"><use href="#i-bulb"/></svg>힌트</button>
+                <button id="micBtn" class="mic" type="button" aria-label="음성 입력" aria-keyshortcuts="Space" title="음성 입력 (스페이스를 길게 누르고 말하기)"><svg class="i lg" aria-hidden="true"><use href="#i-mic"/></svg></button>
+                <button id="hintBtn" class="act hint-btn" type="button" aria-keyshortcuts="Control+H" title="지금 할 만한 말을 추천받아요 (Ctrl+H)"><svg class="i" aria-hidden="true"><use href="#i-bulb"/></svg>힌트</button>
                 <button id="sendBtn" class="act send" type="button"><span class="lbl">보내기</span><svg class="i" aria-hidden="true"><use href="#i-send"/></svg></button>
               </div>
             </div>
-            <div class="mic-hint"><span id="micWave" class="wave hidden" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span id="micStatus">마이크를 눌러 말해 보세요.</span></div>
+            <div class="mic-hint"><span id="micWave" class="wave hidden" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span id="micStatus">마이크를 눌러 말해 보세요.</span><span class="kbd-hint" aria-hidden="true"><kbd>Space</kbd> 길게 누르고 말하기 · <kbd>Ctrl</kbd>+<kbd>H</kbd> 힌트 · <kbd>Esc</kbd> 닫기</span></div>
           </div>
         </div>
         <aside class="rail" id="chatSide">

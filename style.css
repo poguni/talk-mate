@@ -296,6 +296,10 @@ svg.i.xl { width: 26px; height: 26px; }
 @keyframes ring { 50% { box-shadow: 0 0 0 7px var(--pen-soft); } }
 .mic-hint { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; min-height: 18px; padding: 0 18px; }
 .mic-hint.live { color: var(--pen); }
+/* 키보드 단축키 안내: 마우스를 쓰는 PC에서만 */
+.kbd-hint { display: none; margin-left: auto; white-space: nowrap; color: var(--muted); }
+.kbd-hint kbd { font-family: var(--font-mono); font-size: 11px; padding: 1px 6px; border-radius: 6px; border: 1px solid var(--line-strong); border-bottom-width: 2px; background: var(--surface); color: var(--text-2); }
+@media (hover: hover) and (pointer: fine) and (min-width: 861px) { .kbd-hint { display: inline; } }
 .wave { display: inline-flex; align-items: center; gap: 3px; height: 18px; }
 .wave i { width: 3px; border-radius: 2px; background: var(--pen); animation: wave 1s ease-in-out infinite; }
 .wave i:nth-child(1) { height: 6px; } .wave i:nth-child(2) { height: 14px; animation-delay: .1s; } .wave i:nth-child(3) { height: 18px; animation-delay: .2s; } .wave i:nth-child(4) { height: 10px; animation-delay: .3s; } .wave i:nth-child(5) { height: 16px; animation-delay: .4s; }
