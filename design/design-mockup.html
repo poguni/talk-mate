@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TalkMate 디자인 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Nanum+Pen+Script&family=JetBrains+Mono:wght@400;600&family=Noto+Sans+JP:wght@400;700&display=swap">
+<style>
+/* ───────── 디자인 토큰 (DESIGN.md 3장과 동일) ───────── */
+:root{
+  --bg:#F6F1E7; --surface:#FFFDF8; --surface-2:#F0E9DB; --surface-3:#E8DFCC;
+  --line:#E3DACA; --line-strong:#CFC3AD;
+  --text:#22252E; --text-2:#454A55; --muted:#6B675D;
+  --ink:#2B48C8; --ink-hover:#2340B5; --ink-soft:#E5E9FA; --on-ink:#FFFFFF;
+  --pen:#C93A29; --pen-soft:#FBE4DE;
+  --fix:#1F7F53; --fix-soft:#DFF2E6;
+  --hl:#FFE27A; --hl-soft:#FFF3BF;
+  --note:#FFFCF3; --note-line:#D6E0F0; --note-margin:#EDB3AA;
+  --lang-en:#3559C7; --lang-ja:#B03F69; --lang-es:#9C600B;
+  --stamp:#2B48C8;
+  --shadow-1:0 1px 0 rgba(70,50,20,.05),0 8px 24px rgba(70,50,20,.07);
+  --shadow-2:0 2px 0 rgba(70,50,20,.06),0 18px 48px rgba(70,50,20,.16);
+  --focus:#2B48C8;
+  --font-body:'IBM Plex Sans KR','Noto Sans JP',system-ui,-apple-system,'Malgun Gothic',sans-serif;
+  --font-pen:'Nanum Pen Script','IBM Plex Sans KR',cursive;
+  --font-mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+  --r-input:12px; --r-chip:999px; --r-card:18px; --r-bubble:20px; --r-sheet:24px;
+  color-scheme:light;
+}
+:root[data-theme=dark]{
+  --bg:#14120E; --surface:#1D1A15; --surface-2:#28241D; --surface-3:#332E25;
+  --line:#353026; --line-strong:#4A4335;
+  --text:#F2EDE3; --text-2:#D6CFC2; --muted:#A69E8F;
+  --ink:#8FA3FF; --ink-hover:#A7B6FF; --ink-soft:#252C4D; --on-ink:#0E1330;
+  --pen:#FF8371; --pen-soft:#3B201B;
+  --fix:#6CD49C; --fix-soft:#16301F;
+  --hl:#6B5413; --hl-soft:#3A3218;
+  --note:#201D17; --note-line:#2C3546; --note-margin:#5B2F29;
+  --lang-en:#8FA8FF; --lang-ja:#F08DB3; --lang-es:#F2B35A;
+  --stamp:#8FA3FF;
+  --shadow-1:0 1px 0 rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  --shadow-2:0 2px 0 rgba(0,0,0,.35),0 18px 48px rgba(0,0,0,.45);
+  --focus:#8FA3FF;
+  color-scheme:dark;
+}
+
+/* ───────── 기본 ───────── */
+*{box-sizing:border-box}
+html{scroll-padding-top:64px}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 var(--font-body);word-break:keep-all;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+svg.i.sm{width:14px;height:14px} svg.i.lg{width:22px;height:22px} svg.i.xl{width:26px;height:26px}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.mono{font-family:var(--font-mono)}
+.muted{color:var(--muted)}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ───────── 시안 탐색 바(앱 아님) ───────── */
+.mock-bar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:14px;padding:10px 16px;background:#16140F;color:#EDE6D8;overflow-x:auto;border-bottom:1px solid #2C271F}
+.mock-bar strong{white-space:nowrap;font-size:14px}
+.mock-bar nav{display:flex;gap:4px}
+.mock-bar a{white-space:nowrap;font-size:13px;color:#BDB3A1;text-decoration:none;padding:7px 12px;border-radius:999px}
+.mock-bar a:hover{color:#fff;background:#2A251D}
+.mock-bar a[aria-current=page]{background:#FFE27A;color:#22252E;font-weight:700}
+.mock-bar button{margin-left:auto;white-space:nowrap;background:#2A251D;border:1px solid #3A3328;color:#EDE6D8;border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer}
+.screen[hidden]{display:none}
+.stage{padding:28px 16px 64px;display:flex;justify-content:center;gap:28px;flex-wrap:wrap;align-items:flex-start}
+.caption{width:100%;max-width:1200px;margin:0 auto;padding:20px 16px 0;color:var(--muted);font-size:14px}
+.caption b{color:var(--text)}
+
+/* ───────── 앱 셸 ───────── */
+.app{width:100%;max-width:1200px;background:var(--bg);border-radius:20px;box-shadow:0 0 0 1px var(--line);overflow:hidden}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 24px;background:var(--surface);border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.02em}
+.logo small{font-weight:500;font-size:13px;color:var(--muted);letter-spacing:0}
+.logo-mark{width:34px;height:34px;border-radius:12px 12px 12px 4px;background:var(--ink);color:var(--on-ink);display:grid;place-items:center}
+.top-actions{display:flex;align-items:center;gap:8px}
+.cost-chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:12px;padding:6px 12px;border-radius:999px;background:var(--surface-2);color:var(--text-2)}
+.wrap{padding:28px 32px 36px}
+
+/* ───────── 버튼 ───────── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 18px;border-radius:999px;border:1px solid var(--line-strong);background:var(--surface);font-weight:600;font-size:15px;cursor:pointer;white-space:nowrap;text-decoration:none;color:var(--text)}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+.btn.primary:hover{background:var(--ink-hover)}
+.btn.lg{min-height:54px;padding:14px 26px;font-size:17px}
+.btn.sm{min-height:36px;padding:6px 14px;font-size:14px}
+.btn.quiet{border-color:transparent;background:transparent;color:var(--text-2)}
+.btn.quiet:hover{background:var(--surface-2)}
+.btn.danger{color:var(--pen)}
+.tool{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:4px 10px;border-radius:999px;border:0;background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer}
+.tool:hover{background:var(--surface-2);color:var(--text)}
+.tool.on{background:var(--ink-soft);color:var(--ink)}
+.icon-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line-strong);background:var(--surface);display:grid;place-items:center;cursor:pointer;color:var(--text-2)}
+
+/* ───────── 카드·라벨 ───────── */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);box-shadow:var(--shadow-1);padding:24px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.h-display{font-size:40px;line-height:1.2;font-weight:700;letter-spacing:-.035em;margin:8px 0 12px}
+.h-page{font-size:28px;line-height:1.3;font-weight:700;letter-spacing:-.03em;margin:4px 0 0}
+.h-sec{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;letter-spacing:-.02em;margin:0 0 16px}
+.step{font-family:var(--font-mono);font-size:12px;font-weight:600;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--ink-soft);color:var(--ink)}
+.field{display:block;margin:14px 0}
+.field>span{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+.input{width:100%;min-height:46px;padding:10px 14px;border-radius:var(--r-input);border:1px solid var(--line-strong);background:var(--surface)}
+.input::placeholder{color:var(--muted)}
+.help{font-size:13px;color:var(--muted);margin-top:6px}
+
+/* 언어 배지: 국기 이모지 대신 사용 (Windows Edge는 국기 이모지를 글자로 표시) */
+.lang{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:50%;font-family:var(--font-mono);font-weight:600;font-size:12px;letter-spacing:.04em;color:#fff;flex:none}
+.lang.sm{width:24px;height:24px;font-size:10px}
+.lang.en{background:var(--lang-en)} .lang.ja{background:var(--lang-ja)} .lang.es{background:var(--lang-es)}
+:root[data-theme=dark] .lang{color:#14120E}
+
+/* 세그먼트 */
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:999px;background:var(--surface-2)}
+.seg button{border:0;background:transparent;min-height:36px;padding:6px 14px;border-radius:999px;font-size:14px;font-weight:600;color:var(--text-2);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(40,30,10,.15)}
+.seg.ink button[aria-pressed=true]{background:var(--ink);color:var(--on-ink);box-shadow:none}
+
+/* 선택 카드 */
+.pick{position:relative;display:flex;flex-direction:column;gap:6px;text-align:left;padding:16px;border-radius:16px;border:1.5px solid var(--line);background:var(--surface);cursor:pointer;min-height:44px}
+.pick:hover{border-color:var(--line-strong)}
+.pick[aria-pressed=true]{border-color:var(--ink);background:var(--ink-soft)}
+.pick[aria-pressed=true]::after{content:"";position:absolute;top:12px;right:12px;width:22px;height:22px;border-radius:50%;background:var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4L18 8'/%3E%3C/svg%3E") center/14px no-repeat}
+.pick .t{font-weight:700}
+.pick .d{font-size:13px;color:var(--muted);line-height:1.45}
+.tile{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--surface-2);color:var(--text-2)}
+.pick[aria-pressed=true] .tile{background:var(--surface);color:var(--ink)}
+.grid-lang{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.grid-scen{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px}
+.cat{font-size:13px;font-weight:700;color:var(--muted);margin:18px 0 8px}
+
+/* ───────── 01 시작 ───────── */
+.hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:40px;align-items:center}
+.hero p.lead{font-size:17px;color:var(--text-2);margin:0 0 24px;max-width:30em}
+.radio-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.radio-card{display:flex;gap:10px;padding:14px;border-radius:14px;border:1.5px solid var(--line);cursor:pointer}
+.radio-card.on{border-color:var(--ink);background:var(--ink-soft)}
+.radio-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--line-strong);flex:none;margin-top:2px}
+.radio-card.on .radio-dot{border:6px solid var(--ink)}
+.radio-card b{display:block;font-size:15px}
+.radio-card span{font-size:13px;color:var(--muted);line-height:1.45}
+.status-ok{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;background:var(--fix-soft);color:var(--fix);font-size:14px;font-weight:600}
+.trust{display:flex;flex-direction:column;gap:8px;margin:20px 0 0;padding:0;list-style:none;font-size:13px;color:var(--muted)}
+.trust li{display:flex;gap:8px;align-items:flex-start}
+.preview{position:relative;padding:28px;border-radius:28px;background:var(--surface-2)}
+
+/* ───────── 말풍선 ───────── */
+.thread{display:flex;flex-direction:column;gap:18px}
+.msg{display:flex;flex-direction:column;max-width:84%}
+.msg.ai{align-self:flex-start}
+.msg.me{align-self:flex-end;align-items:flex-end}
+.who{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:6px}
+.avatar{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--surface-3);font-size:12px;font-weight:700;color:var(--text-2)}
+.bubble{padding:12px 16px;border-radius:var(--r-bubble);font-size:17px;line-height:1.55}
+.msg.ai .bubble{background:var(--surface);border:1px solid var(--line);border-top-left-radius:6px;box-shadow:var(--shadow-1)}
+.msg.me .bubble{background:var(--ink);color:var(--on-ink);border-top-right-radius:6px}
+.tools{display:flex;gap:2px;margin-top:4px;margin-left:4px}
+.tr{margin-top:6px;padding:8px 12px;border-radius:12px;background:var(--surface-2);font-size:14px;color:var(--text-2);max-width:520px}
+.typing{display:inline-flex;gap:4px;padding:16px}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);opacity:.5;animation:dot 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes dot{40%{opacity:1;transform:translateY(-3px)}}
+
+/* ───────── 첨삭 노트 (핵심 컴포넌트) ───────── */
+.note{position:relative;margin-top:10px;width:min(560px,100%);padding:6px 18px 14px 44px;border-radius:4px 16px 16px 16px;background-color:var(--note);
+  background-image:linear-gradient(to right,transparent 30px,var(--note-margin) 30px,var(--note-margin) 31px,transparent 31px),repeating-linear-gradient(to bottom,transparent 0,transparent 31px,var(--note-line) 31px,var(--note-line) 32px);
+  background-position:0 6px;line-height:32px;font-size:15px;box-shadow:var(--shadow-1);border:1px solid var(--line);text-align:left}
+.note .head{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px}
+.note .head .badge{font-family:var(--font-mono);font-size:11px;font-weight:600;padding:0 8px;line-height:22px;border-radius:999px}
+.note.fix .head{color:var(--pen)} .note.fix .head .badge{background:var(--pen-soft);color:var(--pen)}
+.note.ok .head{color:var(--fix)} .note.ok .head .badge{background:var(--fix-soft);color:var(--fix)}
+.orig{font-size:17px;padding-top:22px}
+.mark{position:relative;display:inline-block;color:var(--pen)}
+.mark s{text-decoration:none;background:linear-gradient(transparent 50%,var(--pen) 50%,var(--pen) calc(50% + 2px),transparent calc(50% + 2px));padding:0 1px}
+.mark .pen{position:absolute;left:50%;bottom:62%;transform:translateX(-50%) rotate(-3deg);white-space:nowrap;font-family:var(--font-pen);font-size:23px;line-height:1;color:var(--pen)}
+.fixed{display:flex;align-items:center;gap:6px;font-weight:600;color:var(--fix)}
+.why{display:flex;gap:8px;align-items:baseline;font-size:14px;color:var(--text-2);line-height:32px}
+.why .chip{flex:none}
+.chip{display:inline-flex;align-items:center;font-size:12px;font-weight:700;line-height:22px;padding:0 9px;border-radius:999px;background:var(--surface-2);color:var(--text-2)}
+.chip.pen{background:var(--pen-soft);color:var(--pen)}
+.natural{margin-top:2px}
+.natural .label{font-size:13px;font-weight:700;color:var(--muted)}
+.hl{background:linear-gradient(transparent 45%,var(--hl) 45%,var(--hl) 88%,transparent 88%);padding:0 2px}
+.pen-comment{font-family:var(--font-pen);font-size:22px;color:var(--pen);line-height:1.2;padding-top:4px}
+.note.ok .pen-comment{color:var(--fix)}
+.note.loading{color:var(--muted);font-size:14px}
+.skel{display:inline-block;height:10px;border-radius:5px;background:var(--surface-3);animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.45}}
+
+/* ───────── 03 회화 ───────── */
+.chat{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}
+.chat-panel{background:var(--surface);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow-1);display:flex;flex-direction:column;min-height:760px}
+.chat-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.chat-title{display:flex;align-items:center;gap:12px}
+.chat-title b{display:block;font-size:17px}
+.chat-title small{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13px}
+.progress{height:4px;background:var(--surface-2);position:relative}
+.progress i{position:absolute;inset:0 auto 0 0;background:var(--ink);border-radius:0 2px 2px 0}
+.chat-body{flex:1;padding:24px 24px 8px;background:var(--bg)}
+.composer{padding:14px 16px 16px;border-top:1px solid var(--line);display:flex;align-items:flex-end;gap:10px}
+.composer .box{flex:1;display:flex;flex-direction:column;gap:6px}
+.composer textarea{width:100%;resize:none;min-height:52px;padding:14px 16px;border-radius:16px;border:1px solid var(--line-strong);background:var(--surface);font-size:16px}
+.mic{width:60px;height:60px;border-radius:50%;border:0;background:var(--ink);color:var(--on-ink);display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 16px rgba(43,72,200,.3);flex:none}
+.mic.live{background:var(--pen);box-shadow:0 0 0 8px var(--pen-soft)}
+.mic-hint{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.wave{display:inline-flex;align-items:center;gap:3px;height:18px}
+.wave i{width:3px;border-radius:2px;background:var(--pen);animation:wave 1s ease-in-out infinite}
+.wave i:nth-child(1){height:6px}.wave i:nth-child(2){height:14px;animation-delay:.1s}.wave i:nth-child(3){height:18px;animation-delay:.2s}.wave i:nth-child(4){height:10px;animation-delay:.3s}.wave i:nth-child(5){height:16px;animation-delay:.4s}
+@keyframes wave{50%{transform:scaleY(.4)}}
+.rail{display:flex;flex-direction:column;gap:16px}
+.rail .card{padding:18px}
+.rail h3{display:flex;align-items:center;justify-content:space-between;font-size:15px;margin:0 0 12px}
+/* 스탬프 카드 (미션) */
+.stamps{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.stamps li{display:flex;align-items:center;gap:12px;font-size:14px;line-height:1.45}
+.stamp{width:38px;height:38px;border-radius:50%;flex:none;display:grid;place-items:center;font-family:var(--font-mono);font-size:12px;font-weight:600;color:var(--muted);border:1.5px dashed var(--line-strong)}
+.stamp.done{border:2px solid var(--stamp);color:var(--stamp);transform:rotate(-12deg);background:color-mix(in srgb,var(--stamp) 8%,transparent)}
+.stamps li.done span{color:var(--muted)}
+/* 오류 집계 */
+.bars{display:flex;flex-direction:column;gap:10px}
+.bar{display:grid;grid-template-columns:84px 1fr 22px;gap:10px;align-items:center;font-size:13px}
+.bar .track{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden}
+.bar .track i{display:block;height:100%;border-radius:4px;background:var(--pen)}
+.bar b{font-family:var(--font-mono);font-size:13px;text-align:right}
+/* 영수증 */
+.receipt{font-family:var(--font-mono);font-size:12px;color:var(--text-2);background:var(--note);border:1px solid var(--line);border-radius:6px;padding:14px 16px 18px;position:relative;
+  -webkit-mask:radial-gradient(circle 6px at 50% 100%,transparent 98%,#000) 0 0/14px 100% repeat-x;mask:radial-gradient(circle 6px at 50% 100%,transparent 98%,#000) 0 0/14px 100% repeat-x}
+.receipt .row{display:flex;justify-content:space-between;gap:10px;padding:3px 0}
+.receipt .sum{border-top:1px dashed var(--line-strong);margin-top:6px;padding-top:8px;font-weight:600;color:var(--text)}
+.receipt .ttl{text-align:center;letter-spacing:.2em;color:var(--muted);margin-bottom:8px}
+
+/* ───────── 02 설정 ───────── */
+.setup{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start}
+.setup .card+.card{margin-top:16px}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.opt-grid{display:grid;grid-template-columns:auto 1fr;gap:12px 18px;align-items:center;margin-top:18px}
+.opt-grid>span{font-size:14px;font-weight:600;color:var(--text-2)}
+.ticket{background:var(--note);border:1px solid var(--line);border-radius:6px 6px 18px 18px;box-shadow:var(--shadow-2);padding:22px 22px 24px;position:sticky;top:76px}
+.ticket::before{content:"";display:block;height:10px;margin:-22px -22px 16px;border-radius:6px 6px 0 0;background:repeating-linear-gradient(90deg,var(--ink) 0 18px,transparent 18px 26px)}
+.ticket h3{font-size:13px;letter-spacing:.18em;font-family:var(--font-mono);color:var(--muted);margin:0 0 4px;font-weight:600}
+.ticket .big{font-size:22px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px}
+.ticket dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0 0 14px;font-size:14px}
+.ticket dt{color:var(--muted)} .ticket dd{margin:0;font-weight:600}
+.ticket ol{margin:0 0 16px;padding-left:20px;font-size:14px;line-height:1.7}
+.ticket .est{display:flex;justify-content:space-between;align-items:baseline;border-top:1px dashed var(--line-strong);padding-top:12px;margin-bottom:16px}
+.ticket .est b{font-family:var(--font-mono);font-size:20px}
+
+/* ───────── 05 리포트 ───────── */
+.report{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0}
+.stat{padding:16px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
+.stat b{display:block;font-family:var(--font-mono);font-size:28px;font-weight:600;letter-spacing:-.02em}
+.stat span{font-size:13px;color:var(--muted)}
+.verdict{font-size:18px;line-height:1.7;margin:0}
+.verdict-pen{font-family:var(--font-pen);font-size:26px;color:var(--pen);margin:6px 0 0;transform:rotate(-1deg)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.list{margin:0;padding-left:20px;line-height:1.8}
+.expr{display:flex;flex-direction:column;gap:2px;padding:12px 0;border-bottom:1px dashed var(--line)}
+.expr:last-child{border-bottom:0}
+.expr .ph{display:flex;align-items:center;gap:6px;font-size:17px;font-weight:600}
+.expr .ko{font-size:14px;color:var(--text-2)}
+.expr .ex{font-size:13px;color:var(--muted)}
+.files{display:flex;flex-direction:column;gap:8px}
+.file{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);text-decoration:none;color:var(--text);min-height:44px}
+.file:hover{border-color:var(--ink)}
+.file .ext{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-family:var(--font-mono);font-size:11px;font-weight:600;color:#fff}
+.file .ext.pdf{background:#C24A3A}.file .ext.doc{background:#2F5DB8}.file .ext.xls{background:#22804F}
+.file b{display:block;font-size:15px} .file small{color:var(--muted);font-size:12px}
+.file svg{margin-left:auto;color:var(--muted)}
+
+/* ───────── 06 설정 대화 상자 ───────── */
+.scrim{position:relative;background:rgba(20,16,10,.42);padding:48px 16px;display:flex;justify-content:center}
+.dialog{width:640px;max-width:100%;background:var(--surface);border-radius:24px;box-shadow:var(--shadow-2);overflow:hidden}
+.dialog header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--line)}
+.dialog header h2{margin:0;font-size:20px}
+.dialog .body{padding:8px 24px 16px}
+.dialog footer{display:flex;justify-content:space-between;gap:8px;padding:14px 24px;border-top:1px solid var(--line);background:var(--surface-2)}
+.group{padding:16px 0;border-bottom:1px solid var(--line)}
+.group:last-child{border-bottom:0}
+.group h3{font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.model-row{display:grid;grid-template-columns:110px 1fr 120px;gap:10px;align-items:center;padding:6px 0;font-size:14px}
+.model-row .role{font-weight:600;color:var(--text-2)}
+.model-row .price{font-family:var(--font-mono);font-size:12px;color:var(--muted);text-align:right}
+.switch{position:relative;width:46px;height:28px;border-radius:999px;background:var(--line-strong);flex:none}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.switch.on{background:var(--ink)} .switch.on::after{left:21px}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:8px 0;font-size:15px}
+.toggle-row small{display:block;font-size:13px;color:var(--muted)}
+.voice-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:6px 0}
+.range{width:100%;accent-color:var(--ink)}
+
+/* ───────── 04 모바일 ───────── */
+.phone{width:360px;height:760px;border-radius:40px;padding:10px;background:#16140F;box-shadow:0 30px 60px rgba(30,20,5,.25);flex:none}
+.phone .scr{position:relative;width:100%;height:100%;border-radius:31px;overflow:hidden;background:var(--bg);display:flex;flex-direction:column}
+.phone .sb{height:30px;display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-size:12px;font-weight:600;font-family:var(--font-mono)}
+.phone .mhead{display:flex;align-items:center;gap:10px;padding:8px 14px 10px;background:var(--surface);border-bottom:1px solid var(--line)}
+.phone .mhead b{font-size:15px;display:block;line-height:1.3}
+.phone .mhead small{font-size:12px;color:var(--muted)}
+.phone .mbody{flex:1;overflow:hidden;padding:14px 14px 0;display:flex;flex-direction:column;gap:12px}
+.phone .bubble{font-size:16px}
+.phone .msg{max-width:92%}
+.phone .note{padding-left:38px;font-size:14px;background-image:linear-gradient(to right,transparent 26px,var(--note-margin) 26px,var(--note-margin) 27px,transparent 27px),repeating-linear-gradient(to bottom,transparent 0,transparent 31px,var(--note-line) 31px,var(--note-line) 32px)}
+.mstrip{display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--surface);border-bottom:1px solid var(--line);font-size:12px;color:var(--muted)}
+.mstrip .mini{width:20px;height:20px;border-radius:50%;border:1.5px dashed var(--line-strong)}
+.mstrip .mini.done{border:2px solid var(--stamp);background:color-mix(in srgb,var(--stamp) 15%,transparent)}
+.mdock{padding:10px 14px 18px;background:var(--surface);border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.mdock .field-m{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;border:1px solid var(--line-strong);background:var(--surface);font-size:15px;min-height:46px}
+.mdock .field-m .ghost{color:var(--muted)}
+.mdock .ctrl{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+.mdock .mic{width:68px;height:68px}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:24px 24px 0 0;box-shadow:0 -12px 40px rgba(30,20,5,.25);padding:10px 18px 22px}
+.sheet .grab{width:40px;height:5px;border-radius:3px;background:var(--line-strong);margin:0 auto 12px}
+.hint{padding:12px 0;border-top:1px solid var(--line)}
+.hint:first-of-type{border-top:0}
+.hint .ph{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:600;font-size:17px}
+.hint .rd{font-size:13px;color:var(--muted)}
+.hint .ko{font-size:14px;color:var(--text-2)}
+.dim{position:absolute;inset:0;background:rgba(20,16,10,.35)}
+
+/* ───────── 07 토큰 ───────── */
+.tok{max-width:1200px;width:100%}
+.sw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.sw{border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--surface)}
+.sw i{display:block;height:64px}
+.sw div{padding:8px 10px;font-size:12px;line-height:1.4}
+.sw b{display:block;font-size:13px}
+.sw code{font-family:var(--font-mono);color:var(--muted);font-size:11px}
+.type-row{display:grid;grid-template-columns:160px 1fr;gap:16px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line)}
+.type-row code{font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+
+/* 반응형(시안 폭이 좁을 때) */
+@media (max-width:980px){
+  .hero,.chat,.setup,.report,.two{grid-template-columns:1fr}
+  .grid-lang{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .wrap{padding:20px 16px}
+  .ticket{position:static}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- 아이콘 (선 1.7px, round) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-logo" viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4H6.5A2.5 2.5 0 0 1 4 13.5z"/><path d="M8.5 10.2l2.2 2.2 4.6-4.6"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2.5"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-speaker" viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="M15.5 9.2a4 4 0 0 1 0 5.6M18 6.8a7.5 7.5 0 0 1 0 10.4"/></symbol>
+  <symbol id="i-translate" viewBox="0 0 24 24"><path d="M4 6h9M8.5 4v2M6.2 6c.4 3.6 2.6 6.4 5.8 7.6M10.8 6c-.4 3.6-2.6 6.4-5.8 7.6"/><path d="M13 20l3.5-8 3.5 8M14.2 17.3h4.6"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9.5 17.5h5M10.5 20.5h3M12 3.5a5.8 5.8 0 0 0-3.7 10.3c.8.7 1.2 1.5 1.2 2.4v.3h5v-.3c0-.9.4-1.7 1.2-2.4A5.8 5.8 0 0 0 12 3.5z"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15.5" r="4"/><path d="M11 12.5l8-8M16 7.5l2.5 2.5M13.8 9.7l2 2"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 20h14"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></symbol>
+  <symbol id="i-plane" viewBox="0 0 24 24"><path d="M3 13.5l7-1.5 3.5 7.5 2-.5-1-8.5 4.5-1.5c1.2-.4 2-1.6 1.5-2.6-.5-1-1.8-1.2-3-.8l-4.5 1.5L7 2.5 5 3l3 8-4.5 1.5z"/></symbol>
+  <symbol id="i-passport" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M9 16h6"/></symbol>
+  <symbol id="i-bed" viewBox="0 0 24 24"><path d="M3 18.5V6.5M3 14h18v4.5M21 14v-1.5a3 3 0 0 0-3-3h-7V14"/><circle cx="7" cy="11" r="1.7"/></symbol>
+  <symbol id="i-dish" viewBox="0 0 24 24"><path d="M5 3v6.5a2 2 0 0 0 4 0V3M7 11.5V21M17 21V3c-2.2 1-3.5 4-3.5 8h3.5"/></symbol>
+  <symbol id="i-sign" viewBox="0 0 24 24"><path d="M12 3v18M6 5.5h10.5l2.5 2.5-2.5 2.5H6zM18 13H7.5L5 15.5 7.5 18H18z"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5.5 8h13l-1 12.5h-11zM9 8V6.5a3 3 0 0 1 6 0V8"/></symbol>
+  <symbol id="i-pill" viewBox="0 0 24 24"><path d="M10.5 20.5a4.6 4.6 0 0 1-6.5-6.5l9.5-9.5a4.6 4.6 0 0 1 6.5 6.5z"/><path d="M8.5 8.5l7 7"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 12V6.5a1.5 1.5 0 0 1 3 0V11M11 10.5V5a1.5 1.5 0 0 1 3 0v5.5M14 10.5V6.5a1.5 1.5 0 0 1 3 0V13M17 11a1.5 1.5 0 0 1 3 0v3a7 7 0 0 1-7 7h-.7a6 6 0 0 1-5.1-2.9L4.5 13.5a1.5 1.5 0 0 1 2.6-1.5L8 13.5"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h3.5l2 5-2.5 1.5a11 11 0 0 0 5.5 5.5L15 13.5l5 2V19a1 1 0 0 1-1 1A15 15 0 0 1 4 5a1 1 0 0 1 1-1z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9.5L5 20v-4H4z"/></symbol>
+  <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 4v16M8 20h8M5 7h14M5 7l-3 6a3 3 0 0 0 6 0zM19 7l-3 6a3 3 0 0 0 6 0z"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M4 20l1-4.5L15.5 5l3.5 3.5L8.5 19zM13.5 7l3.5 3.5"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+</svg>
+
+<header class="mock-bar">
+  <strong>TalkMate · 디자인 시안</strong>
+  <nav aria-label="시안 화면">
+    <a href="#start" data-tab="start">01 시작</a>
+    <a href="#setup" data-tab="setup">02 연습 설정</a>
+    <a href="#chat" data-tab="chat">03 회화</a>
+    <a href="#mobile" data-tab="mobile">04 모바일</a>
+    <a href="#report" data-tab="report">05 리포트</a>
+    <a href="#settings" data-tab="settings">06 설정</a>
+    <a href="#tokens" data-tab="tokens">07 디자인 토큰</a>
+  </nav>
+  <button type="button" id="themeBtn">🌙 어두운 테마 보기</button>
+</header>
+
+<!-- ═════════ 01 시작 ═════════ -->
+<section class="screen" id="start" aria-label="01 시작" hidden>
+<p class="caption"><b>01 시작 · API 키 입력</b> — 왼쪽은 키 입력, 오른쪽은 앱이 하는 일을 실제 화면 조각으로 미리 보여 줍니다.</p>
+<div class="stage"><div class="app">
+  <header class="topbar">
+    <div class="logo"><span class="logo-mark"><svg class="i"><use href="#i-logo"/></svg></span>토크메이트 <small>TalkMate</small></div>
+    <div class="top-actions"><button class="btn sm quiet"><svg class="i"><use href="#i-gear"/></svg>설정</button></div>
+  </header>
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <div class="eyebrow">Café Notebook · 회화 연습</div>
+        <h1 class="h-display">말하면서 배우고,<br>빨간 펜으로 다듬어요.</h1>
+        <p class="lead">공항, 식당, 호텔 같은 상황을 고르면 AI가 원어민 역할로 대화를 걸어옵니다. 내가 말한 문장은 곧바로 노트에 첨삭됩니다.</p>
+        <div class="card">
+          <h2 class="h-sec"><svg class="i"><use href="#i-key"/></svg>OpenRouter API 키</h2>
+          <label class="field"><span class="vh">API 키</span>
+            <div class="row" style="flex-wrap:nowrap"><input class="input mono" type="password" value="sk-or-v1-3f9c2a7d1e" aria-label="API 키"><button class="btn sm">보기</button></div>
+          </label>
+          <div class="radio-row" role="radiogroup" aria-label="키 보관 방식">
+            <label class="radio-card on"><span class="radio-dot"></span><span><b>이번 세션만</b><span>탭을 닫으면 자동으로 지워져요. (권장)</span></span></label>
+            <label class="radio-card"><span class="radio-dot"></span><span><b>이 기기에 저장</b><span>다음에 다시 입력하지 않아요. 개인 PC에서만.</span></span></label>
+          </div>
+          <div class="status-ok"><svg class="i"><use href="#i-check"/></svg>연결되었습니다 · 사용액 $1.24 / 한도 $10.00 · 모델 3개 확인</div>
+          <div class="row" style="margin-top:16px;justify-content:flex-end"><button class="btn">연결 테스트</button><button class="btn primary">시작하기<svg class="i"><use href="#i-send"/></svg></button></div>
+          <ul class="trust">
+            <li><svg class="i sm"><use href="#i-lock"/></svg>키는 OpenRouter 외에는 어디에도 보내지 않고, 저장 파일에도 넣지 않습니다.</li>
+            <li><svg class="i sm"><use href="#i-mic"/></svg>음성 인식은 Edge(PC)·삼성 인터넷(갤럭시)에서 동작하며, 음성이 브라우저 회사 서버로 전송될 수 있습니다.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="preview" aria-label="앱 미리보기">
+        <div class="thread">
+          <div class="msg ai"><div class="who"><span class="lang sm es">ES</span>웨이터 · Gemini 3.8 Flash</div><div class="bubble" lang="es">¿Qué quieren beber?</div></div>
+          <div class="msg me"><div class="bubble" lang="es">Quiero una vino tinto.</div>
+            <div class="note fix">
+              <div class="head"><svg class="i sm"><use href="#i-pencil"/></svg>고칠 곳 1 <span class="badge">성·수 일치</span></div>
+              <div class="orig" lang="es">Quiero <span class="mark"><s>una</s><span class="pen">un</span></span> vino tinto.</div>
+              <div class="pen-comment">vino는 남성 명사예요!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div>
+</section>
+
+<!-- ═════════ 02 연습 설정 ═════════ -->
+<section class="screen" id="setup" aria-label="02 연습 설정" hidden>
+<p class="caption"><b>02 연습 설정</b> — 왼쪽에서 고르고, 오른쪽 '오늘의 주문서'에서 미션과 예상 비용을 확인한 뒤 시작합니다.</p>
+<div class="stage"><div class="app">
+  <header class="topbar">
+    <div class="logo"><span class="logo-mark"><svg class="i"><use href="#i-logo"/></svg></span>토크메이트 <small>TalkMate</small></div>
+    <div class="top-actions"><button class="btn sm quiet"><svg class="i"><use href="#i-gear"/></svg>설정</button></div>
+  </header>
+  <div class="wrap">
+    <div class="setup">
+      <div>
+        <div class="card">
+          <h2 class="h-sec"><span class="step">1</span>언어와 수준</h2>
+          <div class="grid-lang">
+            <button class="pick" aria-pressed="false"><span class="lang en">EN</span><span class="t">영어 · English</span><span class="d">A2+ 초중급</span></button>
+            <button class="pick" aria-pressed="false"><span class="lang ja">JA</span><span class="t">일본어 · 日本語</span><span class="d">B1 중급 · JLPT N3</span></button>
+            <button class="pick" aria-pressed="true"><span class="lang es">ES</span><span class="t">스페인어 · Español</span><span class="d">A1 입문·초급</span></button>
+          </div>
+          <div class="opt-grid">
+            <span>수준</span>
+            <div class="seg ink" role="group" aria-label="수준"><button aria-pressed="true">A1</button><button aria-pressed="false">A2</button><button aria-pressed="false">A2+</button><button aria-pressed="false">B1</button><button aria-pressed="false">B2</button><button aria-pressed="false">C1</button></div>
+            <span>말투</span>
+            <div class="seg" role="group" aria-label="말투"><button aria-pressed="true">상황에 맞게</button><button aria-pressed="false">격식 (usted)</button><button aria-pressed="false">친근 (tú)</button></div>
+            <span>AI 답변</span>
+            <div class="seg" role="group" aria-label="답변 길이"><button aria-pressed="true">짧게</button><button aria-pressed="false">보통</button><button aria-pressed="false">길게</button></div>
+          </div>
+        </div>
+        <div class="card">
+          <h2 class="h-sec"><span class="step">2</span>상황 고르기</h2>
+          <div class="cat">여행</div>
+          <div class="grid-scen">
+            <button class="pick" aria-pressed="false"><span class="tile"><svg class="i lg"><use href="#i-plane"/></svg></span><span class="t">공항 체크인</span><span class="d">좌석·수하물·탑승구</span></button>
+            <button class="pick" aria-pressed="false"><span class="tile"><svg class="i lg"><use href="#i-passport"/></svg></span><span class="t">입국 심사</span><span class="d">방문 목적·체류 기간</span></button>
+            <button class="pick" aria-pressed="false"><span class="tile"><svg class="i lg"><use href="#i-bed"/></svg></span><span class="t">호텔</span><span class="d">체크인·고장 신고</span></button>
+            <button class="pick" aria-pressed="true"><span class="tile"><svg class="i lg"><use href="#i-dish"/></svg></span><span class="t">식당 주문·계산</span><span class="d">추천·알레르기·계산</span></button>
+            <button class="pick" aria-pressed="false"><span class="tile"><svg class="i lg"><use href="#i-sign"/></svg></span><span class="t">길 묻기·교통</span><span class="d">길 찾기·표 사기</span></button>
+            <button class="pick" aria-pressed="false"><span class="tile"><svg class="i lg"><use href="#i-bag"/></svg></span><span class="t">쇼핑·환불</span><span class="d">사이즈·가격·환불</span></button>
+            <button class="pick" aria-pressed="false"><span class="tile"><svg class="i lg"><use href="#i-pill"/></svg></span><span class="t">약국·병원</span><span class="d">증상·복용법</span></button>
+          </div>
+          <div class="cat">일상 · 학습</div>
+          <div class="grid-scen">
+            <button class="pick" aria-pressed="false"><span class="tile"><svg class="i lg"><use href="#i-hand"/></svg></span><span class="t">스몰토크</span><span class="d">처음 만난 사람</span></button>
+            <button class="pick" aria-pressed="false"><span class="tile"><svg class="i lg"><use href="#i-camera"/></svg></span><span class="t">취미 이야기</span><span class="d">좋아하는 것·이유</span></button>
+            <button class="pick" aria-pressed="false"><span class="tile"><svg class="i lg"><use href="#i-phone"/></svg></span><span class="t">전화 예약</span><span class="d">날짜·시간·인원</span></button>
+            <button class="pick" aria-pressed="false"><span class="tile"><svg class="i lg"><use href="#i-chat"/></svg></span><span class="t">자유 대화</span><span class="d">주제를 정해서</span></button>
+            <button class="pick" aria-pressed="false"><span class="tile"><svg class="i lg"><use href="#i-scale"/></svg></span><span class="t">찬반 토론</span><span class="d">의견·근거·반론</span></button>
+            <button class="pick" aria-pressed="false"><span class="tile"><svg class="i lg"><use href="#i-pencil"/></svg></span><span class="t">직접 만들기</span><span class="d">상황·역할·미션</span></button>
+          </div>
+          <label class="field" style="margin-top:20px"><span>여행지 (선택)</span><input class="input" value="마드리드" aria-label="여행지"><div class="help">입력하면 현지 식당 이름, 화폐, 관습에 맞춰 대화합니다.</div></label>
+        </div>
+      </div>
+      <aside class="ticket" aria-label="오늘의 주문서">
+        <h3>TODAY'S ORDER</h3>
+        <p class="big">식당 주문·계산</p>
+        <dl><dt>언어</dt><dd>스페인어 · A1</dd><dt>장소</dt><dd>마드리드</dd><dt>상대</dt><dd>친절한 웨이터</dd><dt>목표</dt><dd>12턴</dd></dl>
+        <div class="eyebrow" style="margin-bottom:6px">미션 4</div>
+        <ol><li>추천 메뉴를 묻기</li><li>알레르기 말하기</li><li>음료를 포함해 주문하기</li><li>계산서 요청·카드 결제</li></ol>
+        <div class="seg" role="group" aria-label="모델 구성" style="margin-bottom:12px"><button aria-pressed="true">기본</button><button aria-pressed="false">고품질</button><button aria-pressed="false">절약</button></div>
+        <div class="est"><span class="muted" style="font-size:14px">예상 비용</span><span><b>$0.036</b> <span class="muted mono" style="font-size:13px">≈ 50원</span></span></div>
+        <button class="btn primary lg" style="width:100%"><svg class="i"><use href="#i-mic"/></svg>대화 시작하기</button>
+      </aside>
+    </div>
+  </div>
+</div></div>
+</section>
+
+<!-- ═════════ 03 회화 (데스크톱) ═════════ -->
+<section class="screen" id="chat" aria-label="03 회화" hidden>
+<p class="caption"><b>03 회화</b> — 말풍선은 깔끔하게, 첨삭은 줄 공책 위에 빨간 펜으로. 오른쪽에는 미션 스탬프 카드, 오류 집계, 비용 영수증.</p>
+<div class="stage"><div class="app">
+  <header class="topbar">
+    <div class="logo"><span class="logo-mark"><svg class="i"><use href="#i-logo"/></svg></span>토크메이트</div>
+    <div class="top-actions"><span class="cost-chip">$0.0062 · 9원</span><button class="btn sm quiet"><svg class="i"><use href="#i-gear"/></svg>설정</button></div>
+  </header>
+  <div class="wrap">
+    <div class="chat">
+      <div class="chat-panel">
+        <div class="chat-head">
+          <div class="chat-title"><span class="tile"><svg class="i lg"><use href="#i-dish"/></svg></span><div><b>식당 주문·계산 · 마드리드</b><small><span class="lang sm es">ES</span>스페인어 · A1 입문·초급 · 턴 3/12</small></div></div>
+          <button class="btn sm primary">대화 종료 · 리포트</button>
+        </div>
+        <div class="progress" aria-label="진행 3/12"><i style="width:25%"></i></div>
+        <div class="chat-body">
+          <div class="thread">
+            <div class="msg ai"><div class="who"><span class="avatar">W</span>웨이터</div>
+              <div class="bubble" lang="es">¡Buenas noches! Bienvenido a Casa Lucío. ¿Mesa para cuántas personas?</div>
+              <div class="tools"><button class="tool"><svg class="i sm"><use href="#i-speaker"/></svg>듣기</button><button class="tool"><svg class="i sm"><use href="#i-translate"/></svg>번역</button></div>
+            </div>
+            <div class="msg me"><div class="bubble" lang="es">Una mesa para dos, por favor.</div>
+              <div class="note ok"><div class="head"><svg class="i sm"><use href="#i-check"/></svg>완벽해요 <span class="badge">정확</span></div><div class="pen-comment">por favor까지, 아주 자연스러워요 ✓</div></div>
+            </div>
+            <div class="msg ai"><div class="who"><span class="avatar">W</span>웨이터</div>
+              <div class="bubble" lang="es">Perfecto, aquí tienen la carta. ¿Qué quieren beber?</div>
+              <div class="tools"><button class="tool"><svg class="i sm"><use href="#i-speaker"/></svg>듣기</button><button class="tool"><svg class="i sm"><use href="#i-translate"/></svg>번역</button></div>
+            </div>
+            <div class="msg me"><div class="bubble" lang="es">Yo quiero una vino tinto y agua sin gas.</div>
+              <div class="note fix">
+                <div class="head"><svg class="i sm"><use href="#i-pencil"/></svg>고칠 곳 1 <span class="badge">성·수 일치</span></div>
+                <div class="orig" lang="es">Yo quiero <span class="mark"><s>una</s><span class="pen">un</span></span> vino tinto y agua sin gas.</div>
+                <div class="fixed" lang="es">→ Quiero un vino tinto y agua sin gas. <button class="tool" aria-label="고친 문장 듣기"><svg class="i sm"><use href="#i-speaker"/></svg></button></div>
+                <div class="why"><span class="chip pen">성·수 일치</span>vino는 남성 명사이므로 un을 씁니다.</div>
+                <div class="natural"><span class="label">더 자연스럽게</span> · <span class="hl" lang="es">Para mí, un vino tinto, por favor.</span></div>
+                <div class="pen-comment">주어 yo는 빼도 돼요.</div>
+              </div>
+            </div>
+            <div class="msg ai"><div class="who"><span class="avatar">W</span>웨이터</div>
+              <div class="bubble" lang="es">¡Muy bien! Un vino tinto y agua sin gas. ¿Tiene alguna alergia?</div>
+              <div class="tools"><button class="tool"><svg class="i sm"><use href="#i-speaker"/></svg>듣기</button><button class="tool on"><svg class="i sm"><use href="#i-translate"/></svg>번역 숨기기</button></div>
+              <div class="tr">좋아요! 레드와인 한 잔과 탄산 없는 물이요. 알레르기가 있으신가요?</div>
+            </div>
+            <div class="msg me"><div class="bubble" lang="es">Si, soy alergico a los mariscos.</div>
+              <div class="note fix">
+                <div class="head"><svg class="i sm"><use href="#i-pencil"/></svg>고칠 곳 2 <span class="badge">철자·표기</span></div>
+                <div class="orig" lang="es"><span class="mark"><s>Si</s><span class="pen">Sí</span></span>, soy <span class="mark"><s>alergico</s><span class="pen">alérgico</span></span> a los mariscos.</div>
+                <div class="why"><span class="chip pen">철자·표기</span>'네'라는 뜻의 sí에는 강세 부호가 붙어요. si는 '만약'.</div>
+                <div class="pen-comment">미션 달성! 알레르기 말하기 ✓</div>
+              </div>
+            </div>
+            <div class="msg ai"><div class="who"><span class="avatar">W</span>웨이터</div><div class="bubble" style="padding:0"><span class="typing" aria-label="입력 중"><i></i><i></i><i></i></span></div></div>
+          </div>
+        </div>
+        <div class="composer">
+          <button class="icon-btn" aria-label="힌트 보기" title="힌트"><svg class="i"><use href="#i-bulb"/></svg></button>
+          <div class="box">
+            <textarea rows="1" aria-label="메시지" placeholder="스페인어로 말하거나 입력하세요  ·  Enter 보내기"></textarea>
+            <div class="mic-hint">마이크를 누르고 말하면 여기에 글자로 나타나요. 확인하고 보내세요.</div>
+          </div>
+          <button class="mic" aria-label="음성 입력"><svg class="i xl"><use href="#i-mic"/></svg></button>
+          <button class="btn primary" style="min-height:60px">보내기</button>
+        </div>
+      </div>
+      <aside class="rail">
+        <div class="card">
+          <h3>미션 스탬프 <span class="mono muted" style="font-size:13px">2 / 4</span></h3>
+          <ul class="stamps">
+            <li><span class="stamp">1</span><span>추천 메뉴를 묻기</span></li>
+            <li class="done"><span class="stamp done"><svg class="i"><use href="#i-check"/></svg></span><span>알레르기 말하기</span></li>
+            <li class="done"><span class="stamp done"><svg class="i"><use href="#i-check"/></svg></span><span>음료를 포함해 주문하기</span></li>
+            <li><span class="stamp">4</span><span>계산서 요청·카드 결제</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>빨간 펜 집계</h3>
+          <div class="bars">
+            <div class="bar"><span>철자·표기</span><span class="track"><i style="width:100%"></i></span><b>2</b></div>
+            <div class="bar"><span>성·수 일치</span><span class="track"><i style="width:50%"></i></span><b>1</b></div>
+          </div>
+        </div>
+        <div class="receipt" aria-label="비용">
+          <div class="ttl">— RECEIPT —</div>
+          <div class="row"><span>대화 · flash ×4</span><span>$0.0041</span></div>
+          <div class="row"><span>교정 · luna ×3</span><span>$0.0012</span></div>
+          <div class="row"><span>번역 · luna ×1</span><span>$0.0009</span></div>
+          <div class="row sum"><span>합계</span><span>$0.0062 · 9원</span></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div></div>
+</section>
+
+<!-- ═════════ 04 모바일 ═════════ -->
+<section class="screen" id="mobile" aria-label="04 모바일" hidden>
+<p class="caption"><b>04 모바일 (갤럭시 · 삼성 인터넷 기준 360px)</b> — ① 대화 중 ② 말하는 중(듣기 상태) ③ 힌트 시트. 마이크가 엄지 위치의 주인공입니다.</p>
+<div class="stage">
+  <!-- ① 대화 중 -->
+  <div class="phone"><div class="scr">
+    <div class="sb"><span>9:41</span><span>5G ▮▮▮</span></div>
+    <div class="mhead"><span class="tile" style="width:38px;height:38px"><svg class="i"><use href="#i-dish"/></svg></span><div style="flex:1"><b>식당 주문·계산</b><small>ES · A1 · 턴 3/12</small></div><button class="btn sm primary">리포트</button></div>
+    <div class="mstrip"><span class="mini"></span><span class="mini done"></span><span class="mini done"></span><span class="mini"></span><span style="margin-left:6px">미션 2/4</span><span class="mono" style="margin-left:auto">9원</span></div>
+    <div class="mbody">
+      <div class="msg ai"><div class="bubble" lang="es">¿Tiene alguna alergia?</div><div class="tools"><button class="tool"><svg class="i sm"><use href="#i-speaker"/></svg>듣기</button><button class="tool"><svg class="i sm"><use href="#i-translate"/></svg>번역</button></div></div>
+      <div class="msg me"><div class="bubble" lang="es">Si, soy alergico a los mariscos.</div>
+        <div class="note fix"><div class="head"><svg class="i sm"><use href="#i-pencil"/></svg>고칠 곳 2</div>
+          <div class="orig" lang="es" style="font-size:16px"><span class="mark"><s>Si</s><span class="pen">Sí</span></span>, soy <span class="mark"><s>alergico</s><span class="pen">alérgico</span></span> a los mariscos.</div>
+          <div class="why" style="font-size:13px"><span class="chip pen">철자·표기</span>sí(네)에는 강세 부호를 붙여요.</div>
+        </div>
+      </div>
+      <div class="msg ai"><div class="bubble" lang="es">Entendido. Le recomiendo la tortilla, no tiene mariscos.</div></div>
+    </div>
+    <div class="mdock">
+      <div class="field-m"><span class="ghost">스페인어로 입력…</span></div>
+      <div class="ctrl"><button class="tool" style="justify-self:start"><svg class="i"><use href="#i-bulb"/></svg>힌트</button><button class="mic" aria-label="음성 입력"><svg class="i xl"><use href="#i-mic"/></svg></button><button class="btn sm primary" style="justify-self:end">보내기</button></div>
+    </div>
+  </div></div>
+
+  <!-- ② 말하는 중 -->
+  <div class="phone"><div class="scr">
+    <div class="sb"><span>9:42</span><span>5G ▮▮▮</span></div>
+    <div class="mhead"><span class="tile" style="width:38px;height:38px"><svg class="i"><use href="#i-dish"/></svg></span><div style="flex:1"><b>식당 주문·계산</b><small>ES · A1 · 턴 4/12</small></div><button class="btn sm primary">리포트</button></div>
+    <div class="mstrip"><span class="mini"></span><span class="mini done"></span><span class="mini done"></span><span class="mini"></span><span style="margin-left:6px">미션 2/4</span><span class="mono" style="margin-left:auto">10원</span></div>
+    <div class="mbody">
+      <div class="msg ai"><div class="bubble" lang="es">Entendido. Le recomiendo la tortilla, no tiene mariscos.</div></div>
+      <div style="flex:1"></div>
+    </div>
+    <div class="mdock">
+      <div class="field-m" style="border-color:var(--pen)"><span lang="es">¿Qué me <span class="ghost">recomien…</span></span></div>
+      <div class="mic-hint" style="justify-content:center;color:var(--pen)"><span class="wave"><i></i><i></i><i></i><i></i><i></i></span>듣고 있어요 · 다시 누르면 멈춰요</div>
+      <div class="ctrl"><button class="tool" style="justify-self:start"><svg class="i"><use href="#i-bulb"/></svg>힌트</button><button class="mic live" aria-label="음성 입력 멈추기"><svg class="i xl"><use href="#i-stop"/></svg></button><button class="btn sm" style="justify-self:end" disabled>보내기</button></div>
+    </div>
+  </div></div>
+
+  <!-- ③ 힌트 시트 -->
+  <div class="phone"><div class="scr">
+    <div class="sb"><span>9:43</span><span>5G ▮▮▮</span></div>
+    <div class="mhead"><span class="tile" style="width:38px;height:38px"><svg class="i"><use href="#i-dish"/></svg></span><div style="flex:1"><b>식당 주문·계산</b><small>ES · A1 · 턴 4/12</small></div><button class="btn sm primary">리포트</button></div>
+    <div class="mbody"><div class="msg ai"><div class="bubble" lang="es">¿Algo más?</div></div></div>
+    <div class="dim"></div>
+    <div class="sheet" role="dialog" aria-label="힌트">
+      <div class="grab"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center"><b style="display:flex;gap:6px;align-items:center"><svg class="i"><use href="#i-bulb"/></svg>이렇게 말해 보세요</b><button class="tool" aria-label="닫기"><svg class="i"><use href="#i-x"/></svg></button></div>
+      <div class="hint"><div class="ph" lang="es">¿Qué me recomienda? <button class="tool" aria-label="듣기"><svg class="i sm"><use href="#i-speaker"/></svg></button></div><div class="ko">무엇을 추천하세요? · 미션 1에 딱 맞아요</div><button class="tool" style="padding-left:0;color:var(--ink)">입력창에 넣기</button></div>
+      <div class="hint"><div class="ph" lang="es">¿Cuál es el plato del día? <button class="tool" aria-label="듣기"><svg class="i sm"><use href="#i-speaker"/></svg></button></div><div class="ko">오늘의 요리는 뭐예요?</div><button class="tool" style="padding-left:0;color:var(--ink)">입력창에 넣기</button></div>
+      <div class="hint"><div class="ph" lang="ja">おすすめは何ですか？ <button class="tool" aria-label="듣기"><svg class="i sm"><use href="#i-speaker"/></svg></button></div><div class="rd">おすすめはなんですか</div><div class="ko">(일본어 연습 때) 추천 메뉴가 뭐예요? · 읽기는 회색 줄에 표시</div></div>
+    </div>
+  </div></div>
+</div>
+</section>
+
+<!-- ═════════ 05 리포트 ═════════ -->
+<section class="screen" id="report" aria-label="05 리포트" hidden>
+<p class="caption"><b>05 리포트</b> — 선생님이 돌려준 첨삭 노트처럼. 형광펜은 외울 표현에만, 빨간 펜은 고친 곳에만 씁니다. 오른쪽은 저장 파일과 영수증.</p>
+<div class="stage"><div class="app">
+  <header class="topbar">
+    <div class="logo"><span class="logo-mark"><svg class="i"><use href="#i-logo"/></svg></span>토크메이트</div>
+    <div class="top-actions"><span class="cost-chip">$0.048 · 67원</span><button class="btn sm quiet"><svg class="i"><use href="#i-gear"/></svg>설정</button></div>
+  </header>
+  <div class="wrap">
+    <button class="btn sm quiet"><svg class="i"><use href="#i-back"/></svg>대화로 돌아가기</button>
+    <div class="report" style="margin-top:12px">
+      <div>
+        <div class="eyebrow">Report · 2026-10-16 20:13</div>
+        <h1 class="h-page">식당 주문·계산 · 마드리드</h1>
+        <div class="row muted" style="font-size:14px;margin-top:6px"><span class="lang sm es">ES</span>스페인어 · A1 입문·초급 · 웨이터와의 대화</div>
+        <div class="stats">
+          <div class="stat"><b>9</b><span>내가 말한 횟수</span></div>
+          <div class="stat"><b>54</b><span>단어 수</span></div>
+          <div class="stat"><b>5/9</b><span>틀린 곳 없는 문장</span></div>
+          <div class="stat"><b>12분</b><span>연습 시간</span></div>
+        </div>
+        <div class="card">
+          <h2 class="h-sec">총평</h2>
+          <p class="verdict">주문과 알레르기 설명을 끝까지 스페인어로 해냈습니다. 짧은 문장을 정확하게 쓰는 힘이 좋아요. 명사의 성과 강세 부호만 다듬으면 A2로 올라갈 준비가 됩니다.</p>
+          <p class="verdict-pen">다음엔 계산서 요청까지 도전! — 선생님</p>
+        </div>
+        <div class="two" style="margin-top:16px">
+          <div class="card"><h2 class="h-sec">잘한 점</h2><ul class="list"><li>질문에 바로 대답하고 por favor를 꼭 붙였어요.</li><li>alérgico a… 구문을 정확히 썼어요.</li></ul></div>
+          <div class="card"><h2 class="h-sec">다음에 연습할 점</h2><ul class="list"><li>명사의 성: un vino / una cerveza</li><li>sí·más 같은 강세 부호</li></ul></div>
+        </div>
+        <div class="two" style="margin-top:16px">
+          <div class="card"><h2 class="h-sec">미션 스탬프 <span class="mono muted" style="font-size:14px;font-weight:400">3/4</span></h2>
+            <ul class="stamps">
+              <li class="done"><span class="stamp done"><svg class="i"><use href="#i-check"/></svg></span><span>추천 메뉴를 묻기</span></li>
+              <li class="done"><span class="stamp done"><svg class="i"><use href="#i-check"/></svg></span><span>알레르기 말하기</span></li>
+              <li class="done"><span class="stamp done"><svg class="i"><use href="#i-check"/></svg></span><span>음료를 포함해 주문하기</span></li>
+              <li><span class="stamp">4</span><span>계산서 요청·카드 결제 <span class="muted">— 대화가 그 전에 끝났어요</span></span></li>
+            </ul></div>
+          <div class="card"><h2 class="h-sec">빨간 펜 집계</h2>
+            <div class="bars">
+              <div class="bar"><span>철자·표기</span><span class="track"><i style="width:100%"></i></span><b>3</b></div>
+              <div class="bar"><span>성·수 일치</span><span class="track"><i style="width:67%"></i></span><b>2</b></div>
+              <div class="bar"><span>활용</span><span class="track"><i style="width:33%"></i></span><b>1</b></div>
+              <div class="bar"><span>어휘 선택</span><span class="track"><i style="width:33%"></i></span><b>1</b></div>
+            </div></div>
+        </div>
+        <div class="card" style="margin-top:16px"><h2 class="h-sec">꼭 외울 표현</h2>
+          <div class="expr"><div class="ph"><span class="hl" lang="es">¿Qué me recomienda?</span><button class="tool" aria-label="듣기"><svg class="i sm"><use href="#i-speaker"/></svg></button></div><div class="ko">무엇을 추천하세요?</div><div class="ex" lang="es">¿Qué me recomienda de postre?</div></div>
+          <div class="expr"><div class="ph"><span class="hl" lang="es">Soy alérgico a…</span><button class="tool" aria-label="듣기"><svg class="i sm"><use href="#i-speaker"/></svg></button></div><div class="ko">저는 …에 알레르기가 있어요</div><div class="ex" lang="es">Soy alérgico a los frutos secos.</div></div>
+          <div class="expr"><div class="ph"><span class="hl" lang="es">La cuenta, por favor.</span><button class="tool" aria-label="듣기"><svg class="i sm"><use href="#i-speaker"/></svg></button></div><div class="ko">계산서 주세요</div><div class="ex" lang="es">Perdone, la cuenta, por favor.</div></div>
+        </div>
+        <div class="card" style="margin-top:16px"><h2 class="h-sec">첨삭 노트</h2>
+          <div class="note fix" style="width:100%;margin:0 0 12px"><div class="orig" lang="es">Yo quiero <span class="mark"><s>una</s><span class="pen">un</span></span> vino tinto.</div><div class="why"><span class="chip pen">성·수 일치</span>vino는 남성 명사이므로 un을 씁니다.</div></div>
+          <div class="note fix" style="width:100%;margin:0"><div class="orig" lang="es"><span class="mark"><s>Si</s><span class="pen">Sí</span></span>, soy <span class="mark"><s>alergico</s><span class="pen">alérgico</span></span> a los mariscos.</div><div class="why"><span class="chip pen">철자·표기</span>sí(네)·alérgico에 강세 부호를 붙여요.</div></div>
+        </div>
+      </div>
+      <aside class="rail">
+        <div class="card"><h3>파일로 저장</h3>
+          <div class="files">
+            <a class="file" href="#"><span class="ext pdf">PDF</span><span><b>PDF</b><small>리포트 + 대화 전문, 인쇄용</small></span><svg class="i"><use href="#i-download"/></svg></a>
+            <a class="file" href="#"><span class="ext doc">DOC</span><span><b>Word</b><small>표·첨삭 강조 포함</small></span><svg class="i"><use href="#i-download"/></svg></a>
+            <a class="file" href="#"><span class="ext xls">XLS</span><span><b>Excel</b><small>교정 노트·표현 목록 7개 시트</small></span><svg class="i"><use href="#i-download"/></svg></a>
+          </div>
+          <p class="help" style="margin-bottom:0">파일 이름: <span class="mono">talkmate_es_restaurant_2026-10-16_2013</span></p>
+        </div>
+        <div class="card"><h3>다음 연습 추천</h3><p style="margin:0;font-size:15px"><b>전화 예약</b> — 날짜·시간·인원 표현을 연습해 보세요.</p><button class="btn primary" style="width:100%;margin-top:14px">새 연습 시작</button></div>
+        <div class="receipt">
+          <div class="ttl">— RECEIPT —</div>
+          <div class="row"><span>대화 · flash ×10</span><span>$0.0210</span></div>
+          <div class="row"><span>교정 · luna ×9</span><span>$0.0021</span></div>
+          <div class="row"><span>힌트·번역 · luna ×3</span><span>$0.0010</span></div>
+          <div class="row"><span>리포트 · sonnet ×1</span><span>$0.0240</span></div>
+          <div class="row sum"><span>합계</span><span>$0.048 · 67원</span></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div></div>
+</section>
+
+<!-- ═════════ 06 설정 ═════════ -->
+<section class="screen" id="settings" aria-label="06 설정" hidden>
+<p class="caption"><b>06 설정 대화 상자</b> — 키·모델·음성·대화를 그룹으로 나눕니다. 키 보관 방식은 세그먼트로 바로 바꿀 수 있습니다.</p>
+<div class="stage"><div class="app">
+  <header class="topbar">
+    <div class="logo"><span class="logo-mark"><svg class="i"><use href="#i-logo"/></svg></span>토크메이트</div>
+    <div class="top-actions"><button class="btn sm quiet"><svg class="i"><use href="#i-gear"/></svg>설정</button></div>
+  </header>
+  <div class="scrim">
+    <div class="dialog" role="dialog" aria-labelledby="dlgT">
+      <header><h2 id="dlgT">설정</h2><button class="tool" aria-label="닫기"><svg class="i"><use href="#i-x"/></svg></button></header>
+      <div class="body">
+        <div class="group">
+          <h3><svg class="i"><use href="#i-key"/></svg>API 키</h3>
+          <div class="row" style="justify-content:space-between"><span class="mono" style="font-size:14px">sk-or-v1-3f…7d1e</span>
+            <div class="seg ink" role="group" aria-label="키 보관"><button aria-pressed="true">이번 세션만</button><button aria-pressed="false">이 기기에 저장</button></div></div>
+          <div class="row" style="margin-top:10px"><button class="btn sm">키 변경</button><button class="btn sm">연결 테스트 · 단가 갱신</button><button class="btn sm danger">키 지우기</button></div>
+        </div>
+        <div class="group">
+          <h3>AI 모델 <span class="muted" style="font-weight:400;font-size:13px">100만 토큰당 입력/출력</span></h3>
+          <div class="model-row"><span class="role">대화 상대</span><input class="input mono" style="min-height:40px;font-size:13px" value="google/gemini-3.8-flash" aria-label="대화 상대 모델"><span class="price">$0.75 / $3.75</span></div>
+          <div class="model-row"><span class="role">교정·힌트</span><input class="input mono" style="min-height:40px;font-size:13px" value="openai/gpt-6-luna" aria-label="교정 모델"><span class="price">$0.10 / $0.50</span></div>
+          <div class="model-row"><span class="role">리포트</span><input class="input mono" style="min-height:40px;font-size:13px" value="anthropic/claude-sonnet-5.5" aria-label="리포트 모델"><span class="price">$2.00 / $10.00</span></div>
+        </div>
+        <div class="group">
+          <h3><svg class="i"><use href="#i-speaker"/></svg>음성</h3>
+          <div class="toggle-row"><span>AI 말 자동으로 읽기</span><span class="switch on" role="switch" aria-checked="true"></span></div>
+          <div class="toggle-row"><span>말이 끝나면 바로 보내기<small>끄면 인식된 문장을 확인하고 보냅니다</small></span><span class="switch" role="switch" aria-checked="false"></span></div>
+          <label class="field"><span>읽기 속도 <span class="mono muted">0.95×</span></span><input class="range" type="range" min="0.6" max="1.3" step="0.05" value="0.95"></label>
+          <div class="voice-row"><span class="lang sm en">EN</span><select class="input" style="min-height:40px" aria-label="영어 목소리"><option>Microsoft Ava Online (Natural) · en-US</option></select><button class="icon-btn" aria-label="들어 보기"><svg class="i"><use href="#i-play"/></svg></button></div>
+          <div class="voice-row"><span class="lang sm ja">JA</span><select class="input" style="min-height:40px" aria-label="일본어 목소리"><option>Microsoft Nanami Online (Natural) · ja-JP</option></select><button class="icon-btn" aria-label="들어 보기"><svg class="i"><use href="#i-play"/></svg></button></div>
+          <div class="voice-row"><span class="lang sm es">ES</span><select class="input" style="min-height:40px" aria-label="스페인어 목소리"><option>Microsoft Elvira Online (Natural) · es-ES</option></select><button class="icon-btn" aria-label="들어 보기"><svg class="i"><use href="#i-play"/></svg></button></div>
+        </div>
+        <div class="group">
+          <h3>대화</h3>
+          <div class="toggle-row"><span>목표 턴 수</span><div class="seg" role="group" aria-label="목표 턴"><button aria-pressed="false">8</button><button aria-pressed="true">12</button><button aria-pressed="false">16</button><button aria-pressed="false">20</button></div></div>
+          <div class="toggle-row"><span>환율 (1달러)</span><span class="mono">1,400원</span></div>
+        </div>
+      </div>
+      <footer><button class="btn sm danger">설정 초기화</button><div class="row"><button class="btn sm">취소</button><button class="btn sm primary">저장</button></div></footer>
+    </div>
+  </div>
+</div></div>
+</section>
+
+<!-- ═════════ 07 디자인 토큰 ═════════ -->
+<section class="screen" id="tokens" aria-label="07 디자인 토큰" hidden>
+<p class="caption"><b>07 디자인 토큰</b> — 상단의 테마 버튼으로 밝은·어두운 값을 비교해 보세요. 모든 색은 CSS 변수로만 씁니다.</p>
+<div class="stage"><div class="tok">
+  <div class="card">
+    <h2 class="h-sec">COLOR · 바탕과 글자</h2>
+    <div class="sw-grid">
+      <div class="sw"><i style="background:var(--bg)"></i><div><b>bg</b><code>--bg</code></div></div>
+      <div class="sw"><i style="background:var(--surface)"></i><div><b>surface</b><code>--surface</code></div></div>
+      <div class="sw"><i style="background:var(--surface-2)"></i><div><b>surface-2</b><code>--surface-2</code></div></div>
+      <div class="sw"><i style="background:var(--line-strong)"></i><div><b>line-strong</b><code>--line-strong</code></div></div>
+      <div class="sw"><i style="background:var(--text)"></i><div><b>text</b><code>--text</code></div></div>
+      <div class="sw"><i style="background:var(--muted)"></i><div><b>muted</b><code>--muted</code></div></div>
+    </div>
+    <h2 class="h-sec" style="margin-top:24px">COLOR · 문구 도구 (잉크·펜·형광펜)</h2>
+    <div class="sw-grid">
+      <div class="sw"><i style="background:var(--ink)"></i><div><b>잉크 블루</b><code>--ink</code> 주요 버튼·내 말풍선·마이크</div></div>
+      <div class="sw"><i style="background:var(--pen)"></i><div><b>빨간 펜</b><code>--pen</code> 틀린 곳·오류 집계·듣기 중</div></div>
+      <div class="sw"><i style="background:var(--fix)"></i><div><b>초록 체크</b><code>--fix</code> 고친 문장·정확</div></div>
+      <div class="sw"><i style="background:var(--hl)"></i><div><b>형광펜</b><code>--hl</code> 외울 표현만</div></div>
+      <div class="sw"><i style="background:var(--note);background-image:repeating-linear-gradient(to bottom,transparent 0 15px,var(--note-line) 15px 16px)"></i><div><b>공책</b><code>--note / --note-line</code></div></div>
+      <div class="sw"><i style="background:var(--stamp)"></i><div><b>스탬프</b><code>--stamp</code> 미션 달성</div></div>
+    </div>
+    <h2 class="h-sec" style="margin-top:24px">COLOR · 언어</h2>
+    <div class="row"><span class="lang en">EN</span><code class="mono muted">--lang-en</code><span class="lang ja" style="margin-left:16px">JA</span><code class="mono muted">--lang-ja</code><span class="lang es" style="margin-left:16px">ES</span><code class="mono muted">--lang-es</code></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h2 class="h-sec">TYPE</h2>
+    <div class="type-row"><code>Display 40/700<br>IBM Plex Sans KR</code><span style="font-size:40px;font-weight:700;letter-spacing:-.035em;line-height:1.2">말하면서 배우고</span></div>
+    <div class="type-row"><code>Bubble 17/400</code><span style="font-size:17px" lang="es">¿Mesa para cuántas personas? <span lang="ja">何名様ですか？</span></span></div>
+    <div class="type-row"><code>Body 16/400</code><span>문장마다 바로 교정과 더 자연스러운 표현이 표시됩니다.</span></div>
+    <div class="type-row"><code>Pen 22–26<br>Nanum Pen Script</code><span class="pen-comment" style="font-size:26px">vino는 남성 명사예요!</span></div>
+    <div class="type-row"><code>Mono 12–28<br>JetBrains Mono</code><span class="mono" style="font-size:20px">$0.048 · 67원 · 5/9</span></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h2 class="h-sec">COMPONENTS</h2>
+    <div class="row" style="gap:20px;align-items:flex-start">
+      <button class="btn primary">주요 버튼</button><button class="btn">보조 버튼</button><button class="btn quiet">조용한 버튼</button>
+      <button class="mic" aria-label="마이크"><svg class="i xl"><use href="#i-mic"/></svg></button><button class="mic live" aria-label="마이크 듣는 중"><svg class="i xl"><use href="#i-stop"/></svg></button>
+      <span class="stamp">1</span><span class="stamp done"><svg class="i"><use href="#i-check"/></svg></span>
+      <span class="chip pen">성·수 일치</span><span class="chip">기타</span><span class="cost-chip">$0.0062 · 9원</span>
+      <div class="seg ink"><button aria-pressed="true">A1</button><button aria-pressed="false">A2</button></div>
+    </div>
+    <div class="row" style="gap:20px;margin-top:20px;align-items:flex-start">
+      <div class="note fix" style="margin:0;width:420px"><div class="head"><svg class="i sm"><use href="#i-pencil"/></svg>고칠 곳 1 <span class="badge">성·수 일치</span></div><div class="orig" lang="es">Quiero <span class="mark"><s>una</s><span class="pen">un</span></span> vino.</div></div>
+      <div class="note ok" style="margin:0;width:300px"><div class="head"><svg class="i sm"><use href="#i-check"/></svg>완벽해요 <span class="badge">정확</span></div><div class="pen-comment">아주 자연스러워요 ✓</div></div>
+      <div class="note loading" style="margin:0;width:260px"><span class="skel" style="width:60%"></span><br><span class="skel" style="width:85%"></span></div>
+    </div>
+  </div>
+</div></div>
+</section>
+
+<script>
+(function(){
+  var ids=['start','setup','chat','mobile','report','settings','tokens'];
+  function show(){
+    var id=(location.hash||'#start').slice(1); if(ids.indexOf(id)<0) id='start';
+    ids.forEach(function(x){document.getElementById(x).hidden=(x!==id)});
+    document.querySelectorAll('.mock-bar a').forEach(function(a){
+      if(a.dataset.tab===id) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current');
+    });
+    window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange',show); show();
+  var root=document.documentElement, btn=document.getElementById('themeBtn');
+  btn.onclick=function(){
+    var dark=root.dataset.theme==='dark';
+    if(dark) delete root.dataset.theme; else root.dataset.theme='dark';
+    btn.textContent=dark?'🌙 어두운 테마 보기':'☀️ 밝은 테마 보기';
+  };
+  document.querySelectorAll('a[href="#"]').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault()})});
+})();
+</script>
+</body>
+</html>
